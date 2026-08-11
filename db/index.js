@@ -2,15 +2,21 @@
 // Universal multi-database layer supporting:
 // 1. PostgreSQL (Neon, Supabase, Vercel Postgres, Railway) via POSTGRES_URL / DATABASE_URL
 // 2. Cloud SQLite (Turso / LibSQL) via TURSO_DATABASE_URL / DATABASE_URL
-// 3. Local SQLite (node:sqlite) as zero-config local fallback.
+// 3. Local / Serverless SQLite fallback (node:sqlite using /tmp on Vercel if no cloud DB configured).
 
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { scryptSync, randomBytes } from 'node:crypto';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_PATH = path.join(__dirname, '..', 'data', 'clinic.db');
+
+// Use /tmp on Vercel/serverless environments to avoid read-only filesystem errors
+const isServerless = Boolean(process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DB_PATH = isServerless
+  ? path.join(os.tmpdir(), 'clinic.db')
+  : path.join(__dirname, '..', 'data', 'clinic.db');
 
 export function hashPassword(password) {
   const salt = randomBytes(16).toString('hex');
@@ -93,7 +99,7 @@ export async function getDb() {
       }
     };
   } else {
-    // Local SQLite Fallback (built-in node:sqlite)
+    // Local / Serverless SQLite Fallback (node:sqlite using /tmp if serverless)
     const { DatabaseSync } = await import('node:sqlite');
     fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
     const sqlite = new DatabaseSync(DB_PATH);
