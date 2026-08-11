@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find a Doctor — Meridian Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="doctors" class="bg-canvas text-ink">
+
+<div id="site-header"></div>
+
+<section class="bg-ink text-white">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8 py-12">
+    <p class="font-mono text-xs uppercase tracking-widest text-brass mb-2">The floor</p>
+    <h1 class="font-display text-3xl sm:text-4xl mb-6">Find a doctor</h1>
+    <div class="flex flex-col sm:flex-row gap-3">
+      <input id="q" type="text" placeholder="Search by doctor name or specialty…"
+        class="flex-1 rounded-full px-5 py-3 text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-brass" />
+      <select id="specialty" class="rounded-full px-5 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-brass">
+        <option value="">All specialties</option>
+      </select>
+      <label class="flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 cursor-pointer select-none">
+        <input id="availableOnly" type="checkbox" class="rounded accent-brass" />
+        <span class="text-sm">Available now only</span>
+      </label>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-5 sm:px-8 py-10">
+  <div id="doctor-count" class="text-sm text-ink/50 mb-5 font-mono"></div>
+  <div id="doctor-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="h-56 rounded-xl skel"></div>
+    <div class="h-56 rounded-xl skel"></div>
+    <div class="h-56 rounded-xl skel"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const seedColors = ['#146B5E','#C99A44','#0E4E44','#8B8577','#2F8F5B','#0F2A2E'];
+function seedColor(seed){ let h=0; for(const c of seed) h=(h*31+c.charCodeAt(0))>>>0; return seedColors[h % seedColors.length]; }
+function initials(name){ return name.replace('Dr. ','').split(' ').map(p=>p[0]).slice(0,2).join(''); }
+
+async function loadSpecialtyOptions() {
+  const sel = document.getElementById('specialty');
+  try {
+    const { specialties } = await Api.get('/doctors/specialties');
+    specialties.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s; opt.textContent = s;
+      sel.appendChild(opt);
+    });
+    if (params.get('specialty')) sel.value = params.get('specialty');
+  } catch {}
+}
+
+function doctorCard(d) {
+  const b = statusBadge(d.availabilityStatus);
+  return `
+    <a href="/book.html?doctorId=${d.id}" class="card-hover bg-white border border-ink/8 rounded-xl p-5 flex flex-col gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-display text-lg shrink-0" style="background:${seedColor(d.photoSeed||d.name)}">${initials(d.name)}</div>
+        <div class="min-w-0">
+          <div class="font-semibold truncate">${d.name}</div>
+          <div class="text-xs text-ink/50 font-mono">${d.specialty}</div>
+        </div>
+      </div>
+      <p class="text-sm text-ink/60 leading-relaxed line-clamp-2">${d.bio || ''}</p>
+      <div class="flex items-center justify-between mt-auto pt-2 border-t border-ink/5">
+        <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full ring-1 ${b.cls}"><span class="${b.dot}"></span>${b.label}</span>
+        <span class="text-sm font-semibold font-mono">${money(d.consultationFee)}</span>
+      </div>
+      <div class="text-xs text-ink/40">${d.experienceYears} yrs experience · ★ ${d.rating} · ${d.location}</div>
+    </a>`;
+}
+
+async function loadDoctors() {
+  const grid = document.getElementById('doctor-grid');
+  const count = document.getElementById('doctor-count');
+  const q = document.getElementById('q').value.trim();
+  const specialty = document.getElementById('specialty').value;
+  const availableOnly = document.getElementById('availableOnly').checked;
+  const qs = new URLSearchParams();
+  if (q) qs.set('q', q);
+  if (specialty) qs.set('specialty', specialty);
+  if (availableOnly) qs.set('available', '1');
+  try {
+    const { doctors } = await Api.get('/doctors?' + qs.toString());
+    count.textContent = `${doctors.length} doctor${doctors.length === 1 ? '' : 's'} found`;
+    grid.innerHTML = doctors.length
+      ? doctors.map(doctorCard).join('')
+      : `<div class="col-span-full text-center py-16 text-ink/50">No doctors match those filters. Try widening your search.</div>`;
+  } catch {
+    grid.innerHTML = `<div class="col-span-full text-center py-16 text-ink/50">Couldn't load doctors right now. Please refresh.</div>`;
+  }
+}
+
+document.getElementById('q').addEventListener('input', debounce(loadDoctors, 250));
+document.getElementById('specialty').addEventListener('change', loadDoctors);
+document.getElementById('availableOnly').addEventListener('change', loadDoctors);
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+(async () => { await loadSpecialtyOptions(); loadDoctors(); })();
+</script>
+</body>
+</html>

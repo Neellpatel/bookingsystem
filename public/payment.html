@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment — Meridian Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="doctors" class="bg-canvas text-ink">
+
+<div id="site-header"></div>
+
+<main class="mx-auto max-w-md px-5 py-14">
+  <div id="loading" class="text-center py-24 text-ink/50">Loading your appointment…</div>
+
+  <div id="pay-view" class="hidden">
+    <p class="font-mono text-xs uppercase tracking-widest text-teal mb-2">Secure checkout</p>
+    <h1 class="font-display text-2xl mb-6">Confirm &amp; pay</h1>
+
+    <div class="bg-white border border-ink/8 rounded-xl p-5 mb-6 space-y-2 text-sm">
+      <div class="flex justify-between"><span class="text-ink/50">Doctor</span><span id="p-doctor" class="font-medium">—</span></div>
+      <div class="flex justify-between"><span class="text-ink/50">Date &amp; time</span><span id="p-time" class="font-medium font-mono">—</span></div>
+      <div class="flex justify-between pt-2 border-t border-ink/10"><span class="text-ink/50">Amount due</span><span id="p-amount" class="font-semibold font-mono text-lg">—</span></div>
+    </div>
+
+    <form id="pay-form" class="bg-white border border-ink/8 rounded-xl p-5 space-y-4">
+      <div>
+        <label class="text-sm font-medium block mb-1.5">Name on card</label>
+        <input id="cardName" required class="w-full rounded-lg border border-ink/15 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brass" placeholder="Jordan Rivera">
+      </div>
+      <div>
+        <label class="text-sm font-medium block mb-1.5">Card number</label>
+        <input id="cardNumber" required inputmode="numeric" maxlength="19" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 font-mono focus:outline-none focus:ring-2 focus:ring-brass" placeholder="4242 4242 4242 4242">
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-sm font-medium block mb-1.5">Expiry</label>
+          <input id="expiry" required class="w-full rounded-lg border border-ink/15 px-4 py-2.5 font-mono focus:outline-none focus:ring-2 focus:ring-brass" placeholder="MM/YY">
+        </div>
+        <div>
+          <label class="text-sm font-medium block mb-1.5">CVV</label>
+          <input id="cvv" required maxlength="4" inputmode="numeric" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 font-mono focus:outline-none focus:ring-2 focus:ring-brass" placeholder="123">
+        </div>
+      </div>
+      <p class="text-xs text-ink/40">This is a demonstration checkout — no real card network is contacted and no funds are moved.</p>
+      <p id="pay-error" class="text-sm text-red-600 hidden"></p>
+      <button id="pay-btn" type="submit" class="w-full py-3.5 rounded-full bg-teal text-white font-semibold hover:bg-teal-dark transition">Pay &amp; confirm appointment</button>
+    </form>
+  </div>
+
+  <div id="success-view" class="hidden text-center py-16">
+    <div class="w-16 h-16 rounded-full bg-available/10 text-available flex items-center justify-center mx-auto mb-5">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <h1 class="font-display text-2xl mb-2">Payment successful</h1>
+    <p class="text-ink/60 mb-1">Your appointment is confirmed.</p>
+    <p id="txn-ref" class="text-xs text-ink/40 font-mono mb-8"></p>
+    <a href="/dashboard.html" class="inline-block px-7 py-3.5 rounded-full bg-teal text-white font-semibold hover:bg-teal-dark transition">View my appointments</a>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+const appointmentId = new URLSearchParams(location.search).get('appointmentId');
+let appt = null;
+
+async function init() {
+  if (!Auth.isLoggedIn()) { window.location.href = '/login.html'; return; }
+  if (!appointmentId) { document.getElementById('loading').textContent = 'No appointment specified.'; return; }
+  try {
+    const { appointments } = await Api.get('/appointments/mine');
+    appt = appointments.find(a => String(a.id) === String(appointmentId));
+    if (!appt) throw new Error('not found');
+    document.getElementById('p-doctor').textContent = appt.doctorName;
+    document.getElementById('p-time').textContent = `${fmtDate(appt.date)} · ${fmtTime(appt.startTime)}`;
+    document.getElementById('p-amount').textContent = money(appt.amount);
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('pay-view').classList.remove('hidden');
+  } catch {
+    document.getElementById('loading').textContent = 'Could not load this appointment.';
+  }
+}
+
+document.getElementById('pay-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('pay-error');
+  errEl.classList.add('hidden');
+  const btn = document.getElementById('pay-btn');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    const { transactionRef } = await Api.post('/payments/mock', {
+      appointmentId,
+      cardName: document.getElementById('cardName').value,
+      cardNumber: document.getElementById('cardNumber').value,
+      expiry: document.getElementById('expiry').value,
+      cvv: document.getElementById('cvv').value,
+    });
+    document.getElementById('pay-view').classList.add('hidden');
+    document.getElementById('txn-ref').textContent = 'Reference ' + transactionRef;
+    document.getElementById('success-view').classList.remove('hidden');
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
+    btn.disabled = false; btn.textContent = 'Pay & confirm appointment';
+  }
+});
+
+init();
+</script>
+</body>
+</html>

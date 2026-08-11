@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Appointments — Meridian Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="dashboard" class="bg-canvas text-ink">
+
+<div id="site-header"></div>
+
+<main class="mx-auto max-w-4xl px-5 sm:px-8 py-12">
+  <div id="banner" class="hidden mb-6 px-4 py-3 rounded-lg bg-available/10 text-emerald-800 text-sm font-medium">Appointment booked — you're all set. Pay at the front desk when you arrive.</div>
+
+  <p class="font-mono text-xs uppercase tracking-widest text-teal mb-2">Your care</p>
+  <h1 class="font-display text-3xl mb-8">My appointments</h1>
+
+  <div id="appt-list" class="space-y-4">
+    <div class="h-24 rounded-xl skel"></div>
+    <div class="h-24 rounded-xl skel"></div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+if (!Auth.isLoggedIn()) window.location.href = '/login.html?redirect=' + encodeURIComponent('/dashboard.html');
+if (Auth.isStaff()) window.location.href = '/reception/index.html';
+
+if (new URLSearchParams(location.search).get('booked') === '1') {
+  document.getElementById('banner').classList.remove('hidden');
+}
+
+function apptCard(a) {
+  const upcoming = ['pending', 'confirmed'].includes(a.status);
+  return `
+    <div class="bg-white border border-ink/8 rounded-xl p-5 flex flex-wrap items-center gap-4">
+      <div class="flex-1 min-w-[220px]">
+        <div class="font-semibold">${a.doctorName}</div>
+        <div class="text-xs text-ink/50 font-mono mb-1">${a.specialty}</div>
+        <div class="text-sm text-ink/70">${fmtDate(a.date)} · ${fmtTime(a.startTime)} – ${fmtTime(a.endTime)}</div>
+        ${a.reason ? `<div class="text-xs text-ink/40 mt-1">“${a.reason}”</div>` : ''}
+      </div>
+      <div class="flex flex-col items-end gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-full ring-1 ${apptStatusBadge(a.status)} capitalize">${a.status}</span>
+        <span class="text-xs text-ink/50 font-mono">${a.paymentMethod === 'online' ? (a.paymentStatus === 'paid' ? 'Paid online' : 'Payment pending') : 'Pay at hospital'} · ${money(a.amount)}</span>
+        ${upcoming ? `<button data-id="${a.id}" class="cancel-btn text-xs text-red-600 hover:underline mt-1">Cancel appointment</button>` : ''}
+      </div>
+    </div>`;
+}
+
+async function load() {
+  const list = document.getElementById('appt-list');
+  try {
+    const { appointments } = await Api.get('/appointments/mine');
+    list.innerHTML = appointments.length
+      ? appointments.map(apptCard).join('')
+      : `<div class="text-center py-16 border border-dashed border-ink/15 rounded-xl">
+           <p class="text-ink/50 mb-4">No appointments yet.</p>
+           <a href="/doctors.html" class="inline-block px-6 py-3 rounded-full bg-teal text-white font-medium hover:bg-teal-dark transition">Find a doctor</a>
+         </div>`;
+    list.querySelectorAll('.cancel-btn').forEach(btn => btn.addEventListener('click', () => cancelAppt(btn.dataset.id)));
+  } catch (e) {
+    list.innerHTML = `<p class="text-red-600 text-sm">${e.message}</p>`;
+  }
+}
+
+async function cancelAppt(id) {
+  if (!confirm('Cancel this appointment? This cannot be undone.')) return;
+  try {
+    await Api.patch('/appointments/' + id, { status: 'cancelled' });
+    load();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+load();
+</script>
+</body>
+</html>

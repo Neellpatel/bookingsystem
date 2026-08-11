@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Portal — Meridian Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="reception" class="bg-ink text-white min-h-screen">
+
+<div id="site-header"></div>
+
+<main class="mx-auto max-w-sm px-5 py-20">
+  <p class="font-mono text-xs uppercase tracking-widest text-brass mb-2">Staff only</p>
+  <h1 class="font-display text-3xl mb-2">Reception portal</h1>
+  <p class="text-white/60 text-sm mb-8">Take appointments on behalf of patients, and keep doctor availability up to date.</p>
+
+  <form id="staff-login-form" class="space-y-4 bg-white/5 border border-white/10 rounded-xl p-6">
+    <div>
+      <label class="text-sm font-medium block mb-1.5">Staff email</label>
+      <input id="email" type="email" required class="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brass" placeholder="reception@meridianhealth.example">
+    </div>
+    <div>
+      <label class="text-sm font-medium block mb-1.5">Password</label>
+      <input id="password" type="password" required class="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brass" placeholder="••••••••">
+    </div>
+    <p id="login-error" class="text-sm text-red-400 hidden"></p>
+    <button type="submit" class="w-full py-3 rounded-full bg-brass text-ink font-semibold hover:brightness-110 transition">Enter reception desk</button>
+  </form>
+
+  <div class="mt-8 p-4 rounded-lg bg-white/5 border border-white/10 text-xs text-white/50 font-mono leading-relaxed">
+    Demo staff login — reception@meridianhealth.example / reception123
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+if (Auth.isLoggedIn() && Auth.isStaff()) window.location.href = '/reception/index.html';
+
+document.getElementById('staff-login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('login-error');
+  errEl.classList.add('hidden');
+  try {
+    const { token, user } = await Api.post('/auth/login', {
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+      staff: true,
+    });
+    Auth.setSession(token, user);
+    window.location.href = '/reception/index.html';
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>

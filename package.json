@@ -1,0 +1,21 @@
+{
+  "name": "meridian-health",
+  "version": "1.0.0",
+  "description": "Meridian Health — doctor appointment booking platform ready for Vercel deployment with database support.",
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Build complete'"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.3"
+  },
+  "license": "MIT"
+}

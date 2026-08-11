@@ -1,0 +1,213 @@
+// db/index.js
+// Universal multi-database layer supporting:
+// 1. PostgreSQL (Neon, Supabase, Vercel Postgres, Railway) via POSTGRES_URL / DATABASE_URL
+// 2. Cloud SQLite (Turso / LibSQL) via TURSO_DATABASE_URL / DATABASE_URL
+// 3. Local SQLite (node:sqlite) as zero-config local fallback.
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { scryptSync, randomBytes } from 'node:crypto';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DB_PATH = path.join(__dirname, '..', 'data', 'clinic.db');
+
+export function hashPassword(password) {
+  const salt = randomBytes(16).toString('hex');
+  const hash = scryptSync(password, salt, 64).toString('hex');
+  return { hash, salt };
+}
+
+export function verifyPassword(password, hash, salt) {
+  const test = scryptSync(password, salt, 64).toString('hex');
+  return test === hash;
+}
+
+let dbInstance = null;
+
+function toPgSql(sql) {
+  let index = 1;
+  return sql.replace(/\?/g, () => `$${index++}`);
+}
+
+export async function getDb() {
+  if (dbInstance) return dbInstance;
+
+  const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL || '';
+
+  if (dbUrl.startsWith('postgres://') || dbUrl.startsWith('postgresql://')) {
+    // PostgreSQL Mode (Neon / Supabase / Vercel Postgres)
+    const { default: pg } = await import('pg');
+    const pool = new pg.Pool({
+      connectionString: dbUrl,
+      ssl: process.env.PG_DISABLE_SSL === 'true' ? false : { rejectUnauthorized: false }
+    });
+
+    dbInstance = {
+      type: 'postgres',
+      async get(sql, args = []) {
+        const res = await pool.query(toPgSql(sql), args);
+        return res.rows[0] || null;
+      },
+      async all(sql, args = []) {
+        const res = await pool.query(toPgSql(sql), args);
+        return res.rows;
+      },
+      async run(sql, args = []) {
+        let pgSql = toPgSql(sql);
+        if (/^insert\s+into/i.test(sql.trim()) && !/returning/i.test(sql)) {
+          pgSql += ' RETURNING id';
+        }
+        const res = await pool.query(pgSql, args);
+        const lastInsertRowid = res.rows[0]?.id ? Number(res.rows[0].id) : null;
+        return { lastInsertRowid, changes: res.rowCount };
+      },
+      async exec(sql) {
+        await pool.query(sql);
+      }
+    };
+  } else if (dbUrl.startsWith('libsql://') || dbUrl.startsWith('https://')) {
+    // Turso / LibSQL Mode
+    const { createClient } = await import('@libsql/client');
+    const client = createClient({
+      url: dbUrl,
+      authToken: process.env.TURSO_AUTH_TOKEN || ''
+    });
+
+    dbInstance = {
+      type: 'turso',
+      async get(sql, args = []) {
+        const res = await client.execute({ sql, args });
+        return res.rows[0] ? Object.fromEntries(res.columns.map((c, i) => [c, res.rows[0][i]])) : null;
+      },
+      async all(sql, args = []) {
+        const res = await client.execute({ sql, args });
+        return res.rows.map(row => Object.fromEntries(res.columns.map((c, i) => [c, row[i]])));
+      },
+      async run(sql, args = []) {
+        const res = await client.execute({ sql, args });
+        return { lastInsertRowid: res.lastInsertRowid ? Number(res.lastInsertRowid) : null, changes: res.rowsAffected };
+      },
+      async exec(sql) {
+        await client.executeMultiple(sql);
+      }
+    };
+  } else {
+    // Local SQLite Fallback (built-in node:sqlite)
+    const { DatabaseSync } = await import('node:sqlite');
+    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+    const sqlite = new DatabaseSync(DB_PATH);
+    sqlite.exec('PRAGMA foreign_keys = ON;');
+
+    dbInstance = {
+      type: 'sqlite',
+      async get(sql, args = []) {
+        const stmt = sqlite.prepare(sql);
+        return stmt.get(...args) || null;
+      },
+      async all(sql, args = []) {
+        const stmt = sqlite.prepare(sql);
+        return stmt.all(...args);
+      },
+      async run(sql, args = []) {
+        const stmt = sqlite.prepare(sql);
+        const info = stmt.run(...args);
+        return { lastInsertRowid: info.lastInsertRowid ? Number(info.lastInsertRowid) : null, changes: info.changes };
+      },
+      async exec(sql) {
+        sqlite.exec(sql);
+      }
+    };
+  }
+
+  // Initialize schema & seed
+  await initSchemaAndSeed(dbInstance);
+  return dbInstance;
+}
+
+async function initSchemaAndSeed(db) {
+  try {
+    if (db.type === 'postgres') {
+      const pgSchema = fs.readFileSync(path.join(__dirname, 'schema.pg.sql'), 'utf-8');
+      await db.exec(pgSchema);
+    } else {
+      const sqliteSchema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf-8');
+      await db.exec(sqliteSchema);
+    }
+
+    const docRow = await db.get('SELECT COUNT(*) AS c FROM doctors');
+    const docCount = Number(docRow?.c || docRow?.count || 0);
+
+    if (docCount === 0) {
+      await seedDoctorsAndSlots(db);
+    }
+
+    const userRow = await db.get('SELECT COUNT(*) AS c FROM users');
+    const userCount = Number(userRow?.c || userRow?.count || 0);
+
+    if (userCount === 0) {
+      await seedUsers(db);
+    }
+  } catch (err) {
+    console.error('Error during database initialization/seeding:', err);
+  }
+}
+
+async function seedDoctorsAndSlots(db) {
+  const doctors = [
+    ['Dr. Amara Whitfield', 'Cardiology', 'Specialist in interventional cardiology and preventive heart care, focused on long-term wellbeing.', 'amara', 14, 120, 4.9, 'Tower A · Floor 3'],
+    ['Dr. Rajiv Menon', 'Orthopedics', 'Orthopedic surgeon specializing in sports injuries and joint replacement.', 'rajiv', 11, 100, 4.8, 'Tower B · Floor 1'],
+    ['Dr. Sofia Delgado', 'Dermatology', 'Board-certified dermatologist focused on medical and cosmetic skin health.', 'sofia', 9, 90, 4.9, 'Tower A · Floor 2'],
+    ['Dr. Ethan Park', 'Pediatrics', 'Pediatrician dedicated to compassionate, family-centered child healthcare.', 'ethan', 8, 80, 4.7, 'Tower C · Floor 1'],
+    ['Dr. Naledi Khumalo', 'Neurology', 'Neurologist with expertise in migraine management and stroke rehabilitation.', 'naledi', 16, 150, 4.9, 'Tower B · Floor 4'],
+    ['Dr. Marcus Bell', 'General Medicine', 'Primary care physician providing holistic, everyday family healthcare.', 'marcus', 6, 60, 4.6, 'Tower A · Floor 1'],
+    ['Dr. Hana Kobayashi', 'Gynecology', "Women's health specialist covering prenatal care through menopause.", 'hana', 12, 110, 4.9, 'Tower C · Floor 2'],
+    ['Dr. Liam O’Connor', 'Dentistry', 'Dental surgeon focused on restorative and cosmetic dentistry.', 'liam', 10, 70, 4.7, 'Tower D · Floor 1'],
+  ];
+
+  const statuses = ['available', 'available', 'busy', 'available', 'off_duty', 'available', 'available', 'busy'];
+  const notes = ['In clinic now', 'In clinic now', 'With a patient — back in ~20 min', 'In clinic now', 'Off today, back tomorrow', 'In clinic now', 'In clinic now', 'In surgery — back in ~1 hr'];
+
+  for (let i = 0; i < doctors.length; i++) {
+    const d = doctors[i];
+    await db.run(
+      `INSERT INTO doctors (name, specialty, bio, photo_seed, experience_years, consultation_fee, rating, location, availability_status, status_note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [...d, statuses[i], notes[i]]
+    );
+  }
+
+  const doctorRows = await db.all('SELECT id FROM doctors');
+  const times = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+
+  for (const doc of doctorRows) {
+    for (let day = 0; day < 7; day++) {
+      const date = new Date();
+      date.setDate(date.getDate() + day);
+      const dateStr = date.toISOString().slice(0, 10);
+      for (const t of times) {
+        if (Math.random() < 0.15) continue;
+        const [h, m] = t.split(':').map(Number);
+        const endM = m + 30;
+        const end = endM === 60 ? `${String(h + 1).padStart(2, '0')}:00` : `${String(h).padStart(2, '0')}:${endM}`;
+        await db.run(
+          `INSERT INTO doctor_slots (doctor_id, slot_date, start_time, end_time) VALUES (?, ?, ?, ?)`,
+          [doc.id, dateStr, t, end]
+        );
+      }
+    }
+  }
+}
+
+async function seedUsers(db) {
+  const staffPass = hashPassword('reception123');
+  await db.run(
+    `INSERT INTO users (name, email, phone, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?, ?)`,
+    ['Front Desk Staff', 'reception@meridianhealth.example', '+1 555 0100', staffPass.hash, staffPass.salt, 'staff']
+  );
+
+  const demoPass = hashPassword('patient123');
+  await db.run(
+    `INSERT INTO users (name, email, phone, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?, ?)`,
+    ['Jordan Rivera', 'patient@meridianhealth.example', '+1 555 0101', demoPass.hash, demoPass.salt, 'patient']
+  );
+}

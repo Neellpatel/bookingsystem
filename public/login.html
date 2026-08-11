@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Meridian Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="login" class="bg-canvas text-ink">
+
+<div id="site-header"></div>
+
+<main class="mx-auto max-w-sm px-5 py-16">
+  <p class="font-mono text-xs uppercase tracking-widest text-teal mb-2">Welcome back</p>
+  <h1 class="font-display text-3xl mb-8">Sign in</h1>
+
+  <form id="login-form" class="space-y-4 bg-white border border-ink/8 rounded-xl p-6">
+    <div>
+      <label class="text-sm font-medium block mb-1.5">Email</label>
+      <input id="email" type="email" required class="w-full rounded-lg border border-ink/15 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brass" placeholder="you@example.com">
+    </div>
+    <div>
+      <label class="text-sm font-medium block mb-1.5">Password</label>
+      <input id="password" type="password" required class="w-full rounded-lg border border-ink/15 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brass" placeholder="••••••••">
+    </div>
+    <p id="login-error" class="text-sm text-red-600 hidden"></p>
+    <button type="submit" class="w-full py-3 rounded-full bg-teal text-white font-semibold hover:bg-teal-dark transition">Sign in</button>
+  </form>
+
+  <p class="text-sm text-ink/60 mt-6 text-center">New here? <a href="/register.html" class="text-teal font-medium hover:underline">Create a free account</a></p>
+
+  <div class="mt-8 p-4 rounded-lg bg-white/60 border border-ink/8 text-xs text-ink/50 font-mono leading-relaxed">
+    Demo patient login — patient@meridianhealth.example / patient123
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+if (Auth.isLoggedIn()) window.location.href = '/dashboard.html';
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('login-error');
+  errEl.classList.add('hidden');
+  try {
+    const { token, user } = await Api.post('/auth/login', {
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+    });
+    Auth.setSession(token, user);
+    const redirect = new URLSearchParams(location.search).get('redirect');
+    window.location.href = redirect ? decodeURIComponent(redirect) : '/dashboard.html';
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>

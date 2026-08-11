@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reception Desk — Meridian Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="reception" class="bg-canvas text-ink">
+
+<div id="site-header"></div>
+
+<main class="mx-auto max-w-7xl px-5 sm:px-8 py-10">
+  <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-widest text-teal mb-1">Reception desk</p>
+      <h1 class="font-display text-3xl">Appointment control</h1>
+    </div>
+    <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center"></div>
+  </div>
+
+  <div class="flex gap-2 mb-8 border-b border-ink/10">
+    <button class="tab-btn px-4 py-2.5 text-sm font-medium border-b-2 border-teal text-teal" data-tab="appointments">Appointments</button>
+    <button class="tab-btn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50 hover:text-ink" data-tab="book">Book for a patient</button>
+    <button class="tab-btn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50 hover:text-ink" data-tab="availability">Doctor availability</button>
+  </div>
+
+  <!-- APPOINTMENTS TAB -->
+  <section id="tab-appointments" class="tab-panel">
+    <div class="flex flex-wrap gap-3 mb-5">
+      <input id="f-q" placeholder="Search patient or doctor…" class="rounded-lg border border-ink/15 px-4 py-2.5 text-sm flex-1 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-brass">
+      <input id="f-date" type="date" class="rounded-lg border border-ink/15 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brass">
+      <select id="f-status" class="rounded-lg border border-ink/15 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brass">
+        <option value="">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <button id="f-clear" class="text-sm text-teal hover:underline px-2">Clear</button>
+    </div>
+    <div class="overflow-x-auto bg-white border border-ink/8 rounded-xl">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-ink/50 border-b border-ink/8 font-mono text-xs uppercase tracking-wide">
+            <th class="px-4 py-3">Patient</th>
+            <th class="px-4 py-3">Doctor</th>
+            <th class="px-4 py-3">Date / time</th>
+            <th class="px-4 py-3">Payment</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="appt-table-body"><tr><td class="px-4 py-6 text-ink/40" colspan="6">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BOOK FOR PATIENT TAB -->
+  <section id="tab-book" class="tab-panel hidden">
+    <div class="grid lg:grid-cols-2 gap-8 max-w-4xl">
+      <div class="bg-white border border-ink/8 rounded-xl p-6">
+        <h2 class="font-display text-lg mb-4">1. Find or create the patient</h2>
+        <label class="text-sm font-medium block mb-1.5">Patient email</label>
+        <div class="flex gap-2 mb-3">
+          <input id="pat-email" type="email" class="flex-1 rounded-lg border border-ink/15 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brass" placeholder="patient@example.com">
+          <button id="pat-lookup" class="px-4 py-2.5 rounded-lg bg-ink text-white text-sm font-medium hover:bg-ink/90">Look up</button>
+        </div>
+        <div id="pat-new-fields" class="hidden space-y-3 mt-4 pt-4 border-t border-ink/10">
+          <p class="text-sm text-ink/60">No account found — we'll create one for this patient.</p>
+          <input id="pat-name" placeholder="Full name" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brass">
+          <input id="pat-phone" placeholder="Phone (optional)" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brass">
+          <input id="pat-password" type="text" placeholder="Temporary password (min 6 chars)" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brass">
+          <button id="pat-create" class="px-4 py-2.5 rounded-lg bg-teal text-white text-sm font-medium hover:bg-teal-dark">Create patient account</button>
+        </div>
+        <p id="pat-status" class="text-sm mt-3"></p>
+      </div>
+
+      <div class="bg-white border border-ink/8 rounded-xl p-6">
+        <h2 class="font-display text-lg mb-4">2. Choose doctor &amp; time</h2>
+        <select id="b-doctor" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-brass">
+          <option value="">Select a doctor…</option>
+        </select>
+        <select id="b-date" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-brass" disabled>
+          <option value="">Select a date…</option>
+        </select>
+        <select id="b-slot" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-brass" disabled>
+          <option value="">Select a time…</option>
+        </select>
+        <select id="b-payment" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-brass">
+          <option value="pay_at_hospital">Pay at hospital (counter)</option>
+          <option value="online">Paid online (already settled)</option>
+        </select>
+        <button id="b-submit" disabled class="w-full py-3 rounded-full bg-teal text-white font-semibold disabled:opacity-40 hover:bg-teal-dark transition">Book appointment</button>
+        <p id="b-status" class="text-sm mt-3"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVAILABILITY TAB -->
+  <section id="tab-availability" class="tab-panel hidden">
+    <p class="text-ink/60 text-sm mb-5 max-w-xl">Update a doctor's live status so patients see accurate availability the moment they browse.</p>
+    <div id="doctor-availability-list" class="grid sm:grid-cols-2 gap-4"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+if (!Auth.isLoggedIn() || !Auth.isStaff()) window.location.href = '/reception/login.html';
+
+// ---- tabs ----
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('border-teal', 'text-teal'); b.classList.add('border-transparent', 'text-ink/50'); });
+    btn.classList.add('border-teal', 'text-teal'); btn.classList.remove('border-transparent', 'text-ink/50');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+  });
+});
+
+// ---- stats ----
+async function loadStats() {
+  try {
+    const s = await Api.get('/staff/summary');
+    document.getElementById('stats').innerHTML = `
+      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.todayCount}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Today</div></div>
+      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.pending}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Pending</div></div>
+      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.confirmed}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Confirmed today</div></div>
+      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.doctorsAvailable}/${s.doctorsTotal}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Doctors free</div></div>
+    `;
+  } catch {}
+}
+
+// ---- appointments table ----
+async function loadAppointments() {
+  const body = document.getElementById('appt-table-body');
+  body.innerHTML = '<tr><td class="px-4 py-6 text-ink/40" colspan="6">Loading…</td></tr>';
+  const qs = new URLSearchParams();
+  const q = document.getElementById('f-q').value.trim();
+  const date = document.getElementById('f-date').value;
+  const status = document.getElementById('f-status').value;
+  if (q) qs.set('q', q);
+  if (date) qs.set('date', date);
+  if (status) qs.set('status', status);
+  try {
+    const { appointments } = await Api.get('/appointments?' + qs.toString());
+    body.innerHTML = appointments.length ? appointments.map(a => `
+      <tr class="border-b border-ink/5 last:border-0">
+        <td class="px-4 py-3">
+          <div class="font-medium">${a.patientName}</div>
+          <div class="text-xs text-ink/40">${a.patientPhone || ''}</div>
+        </td>
+        <td class="px-4 py-3">
+          <div>${a.doctorName}</div>
+          <div class="text-xs text-ink/40 font-mono">${a.specialty}</div>
+        </td>
+        <td class="px-4 py-3 font-mono text-xs">${fmtDate(a.date)}<br>${fmtTime(a.startTime)}</td>
+        <td class="px-4 py-3 text-xs">${a.paymentMethod === 'online' ? 'Online' : 'At hospital'}<br><span class="text-ink/40">${a.paymentStatus}</span></td>
+        <td class="px-4 py-3"><span class="text-xs px-2.5 py-1 rounded-full ring-1 ${apptStatusBadge(a.status)} capitalize">${a.status}</span></td>
+        <td class="px-4 py-3">
+          <div class="flex flex-wrap gap-1.5">
+            ${a.status === 'pending' ? `<button data-id="${a.id}" data-status="confirmed" class="act-btn text-xs px-2.5 py-1 rounded-full bg-teal text-white">Confirm</button>` : ''}
+            ${a.status === 'confirmed' ? `<button data-id="${a.id}" data-status="completed" class="act-btn text-xs px-2.5 py-1 rounded-full bg-ink text-white">Complete</button>` : ''}
+            ${['pending','confirmed'].includes(a.status) ? `<button data-id="${a.id}" data-status="cancelled" class="act-btn text-xs px-2.5 py-1 rounded-full border border-red-300 text-red-600">Cancel</button>` : ''}
+          </div>
+        </td>
+      </tr>`).join('') : '<tr><td class="px-4 py-8 text-center text-ink/40" colspan="6">No appointments match these filters.</td></tr>';
+    body.querySelectorAll('.act-btn').forEach(btn => btn.addEventListener('click', async () => {
+      try { await Api.patch('/appointments/' + btn.dataset.id, { status: btn.dataset.status }); loadAppointments(); loadStats(); }
+      catch (e) { alert(e.message); }
+    }));
+  } catch (e) {
+    body.innerHTML = `<tr><td class="px-4 py-6 text-red-600" colspan="6">${e.message}</td></tr>`;
+  }
+}
+['f-q','f-date','f-status'].forEach(id => document.getElementById(id).addEventListener('input', debounce(loadAppointments, 250)));
+document.getElementById('f-clear').addEventListener('click', () => {
+  document.getElementById('f-q').value = ''; document.getElementById('f-date').value = ''; document.getElementById('f-status').value = '';
+  loadAppointments();
+});
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+// ---- book for patient ----
+let foundPatient = null;
+document.getElementById('pat-lookup').addEventListener('click', async () => {
+  const email = document.getElementById('pat-email').value.trim();
+  const statusEl = document.getElementById('pat-status');
+  if (!email) return;
+  document.getElementById('pat-new-fields').classList.add('hidden');
+  foundPatient = null;
+  try {
+    const { patient } = await Api.get('/patients/lookup?email=' + encodeURIComponent(email));
+    foundPatient = patient;
+    statusEl.innerHTML = `<span class="text-emerald-700">Found: ${patient.name} (${patient.email}). Ready to book below.</span>`;
+    checkBookReady();
+  } catch (e) {
+    if (e.status === 404) {
+      statusEl.innerHTML = `<span class="text-amber-700">No account yet — create one below.</span>`;
+      document.getElementById('pat-new-fields').classList.remove('hidden');
+    } else {
+      statusEl.textContent = e.message;
+    }
+  }
+});
+document.getElementById('pat-create').addEventListener('click', async () => {
+  const statusEl = document.getElementById('pat-status');
+  try {
+    const { user } = await Api.post('/auth/register', {
+      name: document.getElementById('pat-name').value,
+      email: document.getElementById('pat-email').value,
+      phone: document.getElementById('pat-phone').value,
+      password: document.getElementById('pat-password').value || 'patient123',
+    });
+    statusEl.innerHTML = `<span class="text-emerald-700">Account created for ${user.name}. You can now select a time below.</span>`;
+    foundPatient = user;
+    checkBookReady();
+  } catch (e) {
+    if (e.status === 409) {
+      statusEl.innerHTML = `<span class="text-amber-700">This email already has an account — click "Look up" again to fetch it.</span>`;
+    } else {
+      statusEl.textContent = e.message;
+    }
+  }
+});
+
+async function loadBookingDoctors() {
+  const sel = document.getElementById('b-doctor');
+  try {
+    const { doctors } = await Api.get('/doctors');
+    sel.innerHTML = '<option value="">Select a doctor…</option>' + doctors.map(d => `<option value="${d.id}">${d.name} — ${d.specialty} (${statusBadge(d.availabilityStatus).label})</option>`).join('');
+  } catch {}
+}
+document.getElementById('b-doctor').addEventListener('change', async () => {
+  const dateSel = document.getElementById('b-date');
+  const slotSel = document.getElementById('b-slot');
+  dateSel.innerHTML = '<option value="">Select a date…</option>';
+  slotSel.innerHTML = '<option value="">Select a time…</option>';
+  slotSel.disabled = true;
+  if (!document.getElementById('b-doctor').value) { dateSel.disabled = true; checkBookReady(); return; }
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i);
+    const val = d.toISOString().slice(0, 10);
+    const opt = document.createElement('option');
+    opt.value = val; opt.textContent = fmtDate(val);
+    dateSel.appendChild(opt);
+  }
+  dateSel.disabled = false;
+  checkBookReady();
+});
+document.getElementById('b-date').addEventListener('change', async () => {
+  const slotSel = document.getElementById('b-slot');
+  slotSel.innerHTML = '<option value="">Select a time…</option>';
+  const doctorId = document.getElementById('b-doctor').value;
+  const date = document.getElementById('b-date').value;
+  if (!doctorId || !date) { slotSel.disabled = true; checkBookReady(); return; }
+  try {
+    const { slots } = await Api.get(`/doctors/${doctorId}/slots?date=${date}`);
+    slotSel.innerHTML = slots.length
+      ? '<option value="">Select a time…</option>' + slots.map(s => `<option value="${s.id}">${fmtTime(s.startTime)} – ${fmtTime(s.endTime)}</option>`).join('')
+      : '<option value="">No openings this day</option>';
+    slotSel.disabled = !slots.length;
+  } catch { slotSel.disabled = true; }
+  checkBookReady();
+});
+document.getElementById('b-slot').addEventListener('change', checkBookReady);
+
+function checkBookReady() {
+  const ready = foundPatient && document.getElementById('b-doctor').value && document.getElementById('b-date').value && document.getElementById('b-slot').value;
+  document.getElementById('b-submit').disabled = !ready;
+}
+
+document.getElementById('b-submit').addEventListener('click', async () => {
+  const statusEl = document.getElementById('b-status');
+  statusEl.textContent = '';
+  try {
+    // The staff session token books this appointment on record; patient_id is tied to the currently
+    // authenticated account server-side, so for a true walk-in, the newly created patient account must
+    // be the one used at checkout. We book using the staff session (front-desk-taken bookings are
+    // recorded with booked_by_staff_id) against the doctor/slot chosen.
+    const { appointment } = await Api.post('/appointments', {
+      doctorId: document.getElementById('b-doctor').value,
+      slotId: document.getElementById('b-slot').value,
+      paymentMethod: document.getElementById('b-payment').value,
+      patientId: foundPatient.id,
+      reason: 'Booked at reception desk',
+    });
+    statusEl.innerHTML = `<span class="text-emerald-700">Booked appointment #${appointment.id} for ${fmtDate(appointment.date)} at ${fmtTime(appointment.startTime)}.</span>`;
+    loadStats(); loadAppointments();
+  } catch (e) {
+    statusEl.innerHTML = `<span class="text-red-600">${e.message}</span>`;
+  }
+});
+
+// ---- doctor availability ----
+async function loadAvailability() {
+  const list = document.getElementById('doctor-availability-list');
+  try {
+    const { doctors } = await Api.get('/doctors');
+    list.innerHTML = doctors.map(d => {
+      const b = statusBadge(d.availabilityStatus);
+      return `
+      <div class="bg-white border border-ink/8 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="font-semibold">${d.name}</div>
+            <div class="text-xs text-ink/50 font-mono">${d.specialty}</div>
+          </div>
+          <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full ring-1 ${b.cls}"><span class="${b.dot}"></span>${b.label}</span>
+        </div>
+        <div class="flex gap-2 mb-2">
+          <button data-id="${d.id}" data-status="available" class="avail-btn flex-1 text-xs py-2 rounded-lg border border-available/30 text-available hover:bg-available/10">Available</button>
+          <button data-id="${d.id}" data-status="busy" class="avail-btn flex-1 text-xs py-2 rounded-lg border border-busy/30 text-busy hover:bg-busy/10">Busy</button>
+          <button data-id="${d.id}" data-status="off_duty" class="avail-btn flex-1 text-xs py-2 rounded-lg border border-offduty/30 text-offduty hover:bg-offduty/10">Off duty</button>
+        </div>
+        <input data-id="${d.id}" class="note-input w-full rounded-lg border border-ink/15 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brass" placeholder="Status note (optional)" value="${d.statusNote || ''}">
+      </div>`;
+    }).join('');
+    list.querySelectorAll('.avail-btn').forEach(btn => btn.addEventListener('click', async () => {
+      const note = list.querySelector(`.note-input[data-id="${btn.dataset.id}"]`).value;
+      try { await Api.patch(`/doctors/${btn.dataset.id}/availability`, { status: btn.dataset.status, note }); loadAvailability(); loadStats(); loadBookingDoctors(); }
+      catch (e) { alert(e.message); }
+    }));
+  } catch (e) {
+    list.innerHTML = `<p class="text-red-600 text-sm">${e.message}</p>`;
+  }
+}
+
+loadStats();
+loadAppointments();
+loadBookingDoctors();
+loadAvailability();
+</script>
+</body>
+</html>
