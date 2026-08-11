@@ -410,10 +410,11 @@ route('GET', '/api/staff/summary', async (req, res) => {
   });
 });
 
-// ---------- HTTP server ----------
+// ---------- Serverless & HTTP server ----------
 
-if (process.env.VERCEL !== '1' && !process.env.NOW_REGION) {
-  const server = http.createServer(async (req, res) => {
+export default async function handler(req, res) {
+  try {
+    await getDb();
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
     const pathname = url.pathname;
     const query = Object.fromEntries(url.searchParams.entries());
@@ -424,10 +425,17 @@ if (process.env.VERCEL !== '1' && !process.env.NOW_REGION) {
       return;
     }
     await serveStatic(req, res, pathname);
-  });
+  } catch (err) {
+    console.error('Server error:', err);
+    sendJson(res, 500, { error: 'Internal server error' });
+  }
+}
+
+if (!process.env.VERCEL && !process.env.NOW_REGION) {
+  const server = http.createServer(handler);
 
   server.listen(PORT, async () => {
-    await getDb(); // Ensure database connection & initialization
+    await getDb();
     console.log(`Meridian Health server running → http://localhost:${PORT}`);
     console.log(`Staff/reception login → reception@meridianhealth.example / reception123`);
     console.log(`Demo patient login    → patient@meridianhealth.example / patient123`);
