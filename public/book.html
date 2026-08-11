@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Book an Appointment — Meridian Health</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = { theme: { extend: {
-    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    colors: { ink:'#07191D', canvas:'#F4F7F6', teal:'#0D9488', 'teal-dark':'#0F766E', 'teal-light':'#CCFBF1', brass:'#D97706', available:'#10B981', busy:'#F59E0B', offduty:'#6B7280' },
     fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
   } } };
 </script>
@@ -19,63 +19,101 @@
 
 <div id="site-header"></div>
 
-<div id="signin-gate" class="hidden mx-auto max-w-md px-5 py-24 text-center">
-  <h1 class="font-display text-2xl mb-3">Sign in to book</h1>
-  <p class="text-ink/60 mb-6">Create a free account or sign in to reserve your appointment — it takes less than a minute.</p>
-  <div class="flex justify-center gap-3">
-    <a id="signin-link" href="/login.html" class="px-6 py-3 rounded-full border border-ink/15 font-medium hover:bg-white transition">Sign in</a>
-    <a id="register-link" href="/register.html" class="px-6 py-3 rounded-full bg-teal text-white font-medium hover:bg-teal-dark transition">Create account</a>
+<!-- Sign in gate -->
+<div id="signin-gate" class="hidden min-h-[70vh] flex items-center justify-center px-5 py-20">
+  <div class="text-center max-w-sm w-full">
+    <div class="w-16 h-16 rounded-2xl bg-teal/10 flex items-center justify-center mx-auto mb-5">
+      <svg class="w-8 h-8 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+    </div>
+    <h1 class="font-display text-2xl mb-2">Sign in to book</h1>
+    <p class="text-slate-500 text-sm mb-7 leading-relaxed">Create a free account or sign in to reserve your appointment — takes less than a minute.</p>
+    <div class="flex flex-col gap-3">
+      <a id="register-link" href="/register.html" class="w-full py-3.5 rounded-2xl bg-teal text-white font-semibold text-center hover:bg-teal-dark transition active:scale-95 shadow-lg shadow-teal/25">Create free account</a>
+      <a id="signin-link" href="/login.html" class="w-full py-3.5 rounded-2xl border border-slate-200 font-medium text-center hover:bg-white transition active:scale-95">Sign in</a>
+    </div>
   </div>
 </div>
 
-<main id="booking-main" class="mx-auto max-w-5xl px-5 sm:px-8 py-10 hidden">
-  <div id="doctor-summary" class="bg-white border border-ink/8 rounded-xl p-6 flex flex-wrap items-center gap-5 mb-8"></div>
+<main id="booking-main" class="hidden max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
+  <!-- Doctor summary card -->
+  <div id="doctor-summary" class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-6 mb-6 shadow-sm"></div>
 
-  <div class="grid lg:grid-cols-[1.3fr_1fr] gap-8">
-    <div>
-      <h2 class="font-display text-xl mb-4">1. Choose a date &amp; time</h2>
-      <div id="date-tabs" class="flex gap-2 overflow-x-auto pb-2 mb-5"></div>
-      <div id="slot-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 min-h-[80px]">
-        <div class="h-11 rounded-lg skel"></div>
-        <div class="h-11 rounded-lg skel"></div>
-        <div class="h-11 rounded-lg skel"></div>
+  <!-- Mobile: stacked, Desktop: side-by-side -->
+  <div class="grid lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-8">
+    <!-- Left: Steps -->
+    <div class="space-y-7">
+      <!-- Step 1: Date & Time -->
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-7 h-7 rounded-full bg-teal flex items-center justify-center shrink-0">
+            <span class="text-white text-xs font-bold">1</span>
+          </div>
+          <h2 class="font-display text-lg sm:text-xl">Choose date &amp; time</h2>
+        </div>
+        <!-- Date tabs: horizontal scroll on mobile -->
+        <div id="date-tabs" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 mb-5"></div>
+        <div id="slot-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 min-h-[60px]">
+          <div class="h-11 rounded-xl skel"></div>
+          <div class="h-11 rounded-xl skel"></div>
+          <div class="h-11 rounded-xl skel"></div>
+        </div>
       </div>
 
-      <h2 class="font-display text-xl mt-9 mb-3">2. Reason for visit <span class="text-ink/40 text-sm font-sans font-normal">(optional)</span></h2>
-      <textarea id="reason" rows="3" placeholder="e.g. Annual check-up, follow-up on test results…"
-        class="w-full rounded-lg border border-ink/15 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brass"></textarea>
+      <!-- Step 2: Reason -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
+            <span class="text-slate-600 text-xs font-bold">2</span>
+          </div>
+          <h2 class="font-display text-lg sm:text-xl">Reason <span class="text-slate-400 text-sm font-sans font-normal">(optional)</span></h2>
+        </div>
+        <textarea id="reason" rows="3" placeholder="e.g. Annual check-up, follow-up on test results…"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal bg-white resize-none"></textarea>
+      </div>
 
-      <h2 class="font-display text-xl mt-9 mb-3">3. How would you like to pay?</h2>
-      <div class="grid sm:grid-cols-2 gap-3">
-        <label class="pay-option border border-ink/15 rounded-xl p-4 cursor-pointer flex items-start gap-3 hover:border-teal transition">
-          <input type="radio" name="payment" value="online" class="mt-1 accent-teal" checked>
-          <span>
-            <span class="block font-semibold">Pay online now</span>
-            <span class="block text-sm text-ink/55 mt-0.5">Secure card payment. Your slot is confirmed instantly.</span>
-          </span>
-        </label>
-        <label class="pay-option border border-ink/15 rounded-xl p-4 cursor-pointer flex items-start gap-3 hover:border-teal transition">
-          <input type="radio" name="payment" value="pay_at_hospital" class="mt-1 accent-teal">
-          <span>
-            <span class="block font-semibold">Pay at the hospital</span>
-            <span class="block text-sm text-ink/55 mt-0.5">Reserve now, settle the consultation fee at the front desk on arrival.</span>
-          </span>
-        </label>
+      <!-- Step 3: Payment — visible on mobile above summary -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
+            <span class="text-slate-600 text-xs font-bold">3</span>
+          </div>
+          <h2 class="font-display text-lg sm:text-xl">Payment method</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="pay-option flex items-start gap-3 border border-slate-200 rounded-2xl p-4 cursor-pointer hover:border-teal transition has-[:checked]:border-teal has-[:checked]:bg-teal/5">
+            <input type="radio" name="payment" value="online" class="mt-1 accent-teal w-4 h-4" checked>
+            <span>
+              <span class="block font-semibold text-sm">Pay online now</span>
+              <span class="block text-xs text-slate-400 mt-0.5">Secure card payment. Confirmed instantly.</span>
+            </span>
+          </label>
+          <label class="pay-option flex items-start gap-3 border border-slate-200 rounded-2xl p-4 cursor-pointer hover:border-teal transition has-[:checked]:border-teal has-[:checked]:bg-teal/5">
+            <input type="radio" name="payment" value="pay_at_hospital" class="mt-1 accent-teal w-4 h-4">
+            <span>
+              <span class="block font-semibold text-sm">Pay at hospital</span>
+              <span class="block text-xs text-slate-400 mt-0.5">Reserve now, settle at the front desk.</span>
+            </span>
+          </label>
+        </div>
       </div>
     </div>
 
-    <aside class="bg-white border border-ink/8 rounded-xl p-6 h-fit sticky top-6">
+    <!-- Right: Booking Summary (sticky on desktop, below steps on mobile) -->
+    <aside class="bg-white border border-slate-100 rounded-2xl p-5 h-fit lg:sticky lg:top-24 shadow-sm">
       <h3 class="font-display text-lg mb-4">Booking summary</h3>
       <dl class="space-y-3 text-sm">
-        <div class="flex justify-between"><dt class="text-ink/50">Doctor</dt><dd id="sum-doctor" class="font-medium text-right">—</dd></div>
-        <div class="flex justify-between"><dt class="text-ink/50">Date</dt><dd id="sum-date" class="font-medium">—</dd></div>
-        <div class="flex justify-between"><dt class="text-ink/50">Time</dt><dd id="sum-time" class="font-medium font-mono">—</dd></div>
-        <div class="flex justify-between pt-3 border-t border-ink/10"><dt class="text-ink/50">Consultation fee</dt><dd id="sum-fee" class="font-semibold font-mono">—</dd></div>
+        <div class="flex justify-between items-center"><dt class="text-slate-400">Doctor</dt><dd id="sum-doctor" class="font-medium text-right max-w-[60%] text-ellipsis overflow-hidden">—</dd></div>
+        <div class="flex justify-between items-center"><dt class="text-slate-400">Date</dt><dd id="sum-date" class="font-medium">—</dd></div>
+        <div class="flex justify-between items-center"><dt class="text-slate-400">Time</dt><dd id="sum-time" class="font-mono font-medium">—</dd></div>
+        <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+          <dt class="text-slate-400">Consultation fee</dt>
+          <dd id="sum-fee" class="font-bold font-mono text-lg text-ink">—</dd>
+        </div>
       </dl>
-      <button id="confirm-btn" disabled class="w-full mt-6 py-3.5 rounded-full bg-teal text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-teal-dark transition">
+      <button id="confirm-btn" disabled class="w-full mt-5 py-4 rounded-2xl bg-teal text-white font-semibold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-teal-dark transition active:scale-95 shadow-lg shadow-teal/25 text-base">
         Select a time slot
       </button>
-      <p id="booking-error" class="text-sm text-red-600 mt-3 hidden"></p>
+      <p id="booking-error" class="text-sm text-red-500 mt-3 hidden text-center"></p>
     </aside>
   </div>
 </main>
@@ -96,7 +134,11 @@ function dayLabel(dateStr, i) {
 }
 
 async function init() {
-  if (!doctorId) { document.getElementById('booking-main').innerHTML = '<p class="py-24 text-center text-ink/50">No doctor selected. <a href="/doctors.html" class="text-teal underline">Browse doctors →</a></p>'; document.getElementById('booking-main').classList.remove('hidden'); return; }
+  if (!doctorId) {
+    document.getElementById('booking-main').innerHTML = '<p class="py-24 text-center text-slate-400">No doctor selected. <a href="/doctors.html" class="text-teal underline">Browse doctors →</a></p>';
+    document.getElementById('booking-main').classList.remove('hidden');
+    return;
+  }
   if (!Auth.isLoggedIn()) {
     const gate = document.getElementById('signin-gate');
     const ret = encodeURIComponent('/book.html?doctorId=' + doctorId);
@@ -114,7 +156,7 @@ async function init() {
     document.getElementById('sum-doctor').textContent = d.name;
     document.getElementById('sum-fee').textContent = money(d.consultationFee);
   } catch {
-    document.getElementById('doctor-summary').innerHTML = '<p class="text-red-600">Could not load this doctor.</p>';
+    document.getElementById('doctor-summary').innerHTML = '<p class="text-red-500 text-sm">Could not load this doctor.</p>';
     return;
   }
 
@@ -124,14 +166,19 @@ async function init() {
 
 function renderDoctorSummary(d) {
   const b = statusBadge(d.availabilityStatus);
+  const initials = d.name.replace('Dr. ', '').split(' ').map(p => p[0]).slice(0, 2).join('');
   document.getElementById('doctor-summary').innerHTML = `
-    <div class="w-16 h-16 rounded-full flex items-center justify-center text-white font-display text-xl" style="background:#146B5E">${d.name.replace('Dr. ','').split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
-    <div class="flex-1 min-w-[220px]">
-      <div class="font-display text-xl">${d.name}</div>
-      <div class="text-sm text-ink/50 font-mono">${d.specialty} · ${d.location}</div>
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 rounded-2xl bg-teal flex items-center justify-center text-white font-display text-xl shrink-0 shadow-inner">${initials}</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-display text-xl">${d.name}</div>
+        <div class="text-sm text-slate-400 font-mono mt-0.5">${d.specialty} · ${d.location}</div>
+      </div>
+      <span class="hidden sm:inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full ring-1 ${b.cls}"><span class="${b.dot}"></span>${b.label}${d.statusNote ? ' — ' + d.statusNote : ''}</span>
     </div>
-    <span class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full ring-1 ${b.cls}"><span class="${b.dot}"></span>${b.label}${d.statusNote ? ' — ' + d.statusNote : ''}</span>
-  `;
+    <div class="sm:hidden mt-3">
+      <span class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full ring-1 ${b.cls}"><span class="${b.dot}"></span>${b.label}</span>
+    </div>`;
 }
 
 function renderDateTabs() {
@@ -140,7 +187,7 @@ function renderDateTabs() {
   for (let i = 0; i < 7; i++) {
     const date = todayPlus(i);
     const btn = document.createElement('button');
-    btn.className = 'date-tab shrink-0 px-4 py-2.5 rounded-lg border border-ink/15 text-sm font-medium hover:border-teal transition';
+    btn.className = 'date-tab shrink-0 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium hover:border-teal transition bg-white active:scale-95';
     btn.textContent = dayLabel(date, i);
     btn.dataset.date = date;
     btn.addEventListener('click', () => selectDate(date, i));
@@ -150,26 +197,32 @@ function renderDateTabs() {
 
 async function selectDate(date, i) {
   selectedDate = date; selectedSlot = null;
-  document.querySelectorAll('.date-tab').forEach(t => t.classList.toggle('bg-teal', t.dataset.date === date));
-  document.querySelectorAll('.date-tab').forEach(t => t.classList.toggle('text-white', t.dataset.date === date));
+  document.querySelectorAll('.date-tab').forEach(t => {
+    const active = t.dataset.date === date;
+    t.classList.toggle('bg-teal', active);
+    t.classList.toggle('text-white', active);
+    t.classList.toggle('border-teal', active);
+    t.classList.toggle('border-slate-200', !active);
+  });
   updateSummary();
   const grid = document.getElementById('slot-grid');
-  grid.innerHTML = '<div class="h-11 rounded-lg skel"></div><div class="h-11 rounded-lg skel"></div><div class="h-11 rounded-lg skel"></div>';
+  grid.innerHTML = '<div class="h-11 rounded-xl skel"></div><div class="h-11 rounded-xl skel"></div><div class="h-11 rounded-xl skel"></div>';
   try {
     const { slots } = await Api.get(`/doctors/${doctorId}/slots?date=${date}`);
     grid.innerHTML = slots.length ? slots.map(s => `
-      <button class="slot-btn px-3 py-2.5 rounded-lg border border-ink/15 text-sm font-mono hover:border-teal transition" data-slot-id="${s.id}" data-start="${s.startTime}" data-end="${s.endTime}">
+      <button class="slot-btn px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono hover:border-teal transition active:scale-95" data-slot-id="${s.id}" data-start="${s.startTime}" data-end="${s.endTime}">
         ${fmtTime(s.startTime)}
-      </button>`).join('') : '<p class="col-span-full text-sm text-ink/50 py-4">No openings this day — try another date.</p>';
+      </button>`).join('') : '<p class="col-span-full text-sm text-slate-400 py-4">No openings this day — try another date.</p>';
     grid.querySelectorAll('.slot-btn').forEach(btn => btn.addEventListener('click', () => selectSlot(btn)));
   } catch {
-    grid.innerHTML = '<p class="col-span-full text-sm text-red-600 py-4">Could not load time slots.</p>';
+    grid.innerHTML = '<p class="col-span-full text-sm text-red-500 py-4">Could not load time slots.</p>';
   }
 }
 
 function selectSlot(btn) {
-  document.querySelectorAll('.slot-btn').forEach(b => { b.classList.remove('bg-teal', 'text-white', 'border-teal'); });
+  document.querySelectorAll('.slot-btn').forEach(b => { b.classList.remove('bg-teal', 'text-white', 'border-teal'); b.classList.add('border-slate-200'); });
   btn.classList.add('bg-teal', 'text-white', 'border-teal');
+  btn.classList.remove('border-slate-200');
   selectedSlot = { id: btn.dataset.slotId, start: btn.dataset.start, end: btn.dataset.end };
   updateSummary();
 }
@@ -190,9 +243,7 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
   const btn = document.getElementById('confirm-btn');
   btn.disabled = true; btn.textContent = 'Booking…';
   try {
-    const { appointment } = await Api.post('/appointments', {
-      doctorId, slotId: selectedSlot.id, reason, paymentMethod,
-    });
+    const { appointment } = await Api.post('/appointments', { doctorId, slotId: selectedSlot.id, reason, paymentMethod });
     if (paymentMethod === 'online') {
       window.location.href = '/payment.html?appointmentId=' + appointment.id;
     } else {

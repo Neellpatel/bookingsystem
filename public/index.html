@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meridian Health — Book real appointments with real specialists</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Meridian Health — Book specialists who are actually available</title>
 <meta name="description" content="Search specialists, see who is available right now, and book your appointment online or pay at the hospital.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
     theme: {
       extend: {
         colors: {
-          ink: '#0F2A2E', canvas: '#F7F5F0', teal: '#146B5E', 'teal-dark': '#0E4E44',
-          brass: '#C99A44', available: '#2F8F5B', busy: '#C97A2E', offduty: '#8B8577',
+          ink: '#07191D', canvas: '#F4F7F6', teal: '#0D9488', 'teal-dark': '#0F766E',
+          'teal-light': '#CCFBF1', brass: '#D97706', 'brass-light': '#FEF3C7',
+          available: '#10B981', busy: '#F59E0B', offduty: '#6B7280',
         },
         fontFamily: {
           display: ['Fraunces', 'ui-serif', 'serif'],
@@ -31,91 +32,172 @@
 
 <div id="site-header"></div>
 
-<!-- HERO -->
-<section class="bg-ink text-white overflow-hidden relative">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8 py-16 sm:py-24 grid lg:grid-cols-[1.15fr_.85fr] gap-14 items-center">
-    <div>
-      <p class="font-mono text-xs uppercase tracking-[0.2em] text-brass mb-5">Appointments · Live availability · Any payment</p>
-      <h1 class="font-display text-4xl sm:text-6xl leading-[1.05] tracking-tight">
-        See a specialist<br>
-        <span class="italic text-white/80">who's actually free</span><br>
-        this week.
-      </h1>
-      <p class="mt-6 text-white/70 text-lg max-w-xl leading-relaxed">
-        Meridian Health shows you real-time doctor availability before you book — not just an open calendar slot.
-        Pay online in advance, or settle up when you arrive. Either way, your seat is held.
-      </p>
-      <div class="mt-9 flex flex-wrap gap-4">
-        <a href="/doctors.html" class="px-7 py-3.5 rounded-full bg-brass text-ink font-semibold hover:brightness-110 transition">Find a doctor</a>
-        <a href="/register.html" class="px-7 py-3.5 rounded-full border border-white/25 hover:bg-white/10 transition font-medium">Create free account</a>
-      </div>
-      <div class="mt-10 flex items-center gap-8 text-sm text-white/50 font-mono">
-        <span>8 specialties</span>
-        <span class="w-1 h-1 rounded-full bg-white/30"></span>
-        <span>7-day live calendar</span>
-        <span class="w-1 h-1 rounded-full bg-white/30"></span>
-        <span>No-fee cancellation</span>
-      </div>
-    </div>
+<!-- HERO SECTION — mobile-first gradient -->
+<section class="relative overflow-hidden bg-ink text-white">
+  <!-- Glowing orb decorations -->
+  <div class="absolute top-0 right-0 w-64 h-64 rounded-full bg-teal/20 blur-[80px] pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-brass/15 blur-[60px] pointer-events-none"></div>
 
-    <!-- Signature element: live availability rail (ward-status style ledger) -->
-    <div class="bg-white/[0.04] border border-white/10 rounded-2xl backdrop-blur-sm">
-      <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
-        <span class="font-mono text-xs uppercase tracking-widest text-white/60">Right now on the floor</span>
-        <span class="flex items-center gap-1.5 text-xs text-emerald-300 font-mono"><span class="pulse-dot"></span> Live</span>
-      </div>
-      <div id="live-rail" class="divide-y divide-white/10">
-        <div class="px-5 py-4 space-y-3">
-          <div class="h-4 w-2/3 rounded skel"></div>
-          <div class="h-3 w-1/3 rounded skel"></div>
+  <div class="relative mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-12 sm:pt-16 sm:pb-20">
+    <!-- Mobile: stacked, Desktop: side-by-side -->
+    <div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-14 items-center">
+
+      <!-- Left: Headline + CTAs -->
+      <div class="text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-5">
+          <span class="pulse-dot flex-shrink-0"></span>
+          <span class="font-mono text-xs tracking-wide text-white/80">8 doctors available now</span>
+        </div>
+        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight">
+          See a specialist<br>
+          <span class="italic text-teal">who's actually free</span><br>
+          this week.
+        </h1>
+        <p class="mt-5 text-white/65 text-base sm:text-lg max-w-md mx-auto lg:mx-0 leading-relaxed">
+          Real-time availability, instant booking, flexible payment. Your seat is held the moment you confirm.
+        </p>
+        <div class="mt-7 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+          <a href="/doctors.html" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-teal font-semibold hover:bg-teal-dark transition shadow-lg shadow-teal/30 active:scale-95 text-base">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Find a doctor
+          </a>
+          <a href="/register.html" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl border border-white/25 hover:bg-white/10 transition font-medium text-base active:scale-95">
+            Create free account
+          </a>
+        </div>
+        <!-- Trust badges — horizontal scrollable pills on mobile -->
+        <div class="mt-8 flex items-center gap-3 overflow-x-auto no-scrollbar pb-1 justify-center lg:justify-start">
+          <div class="flex items-center gap-1.5 shrink-0 text-xs text-white/50 font-mono bg-white/8 rounded-full px-3 py-1.5 border border-white/10">
+            <svg class="w-3.5 h-3.5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            8 specialties
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0 text-xs text-white/50 font-mono bg-white/8 rounded-full px-3 py-1.5 border border-white/10">
+            <svg class="w-3.5 h-3.5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            7-day calendar
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0 text-xs text-white/50 font-mono bg-white/8 rounded-full px-3 py-1.5 border border-white/10">
+            <svg class="w-3.5 h-3.5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Flexible payment
+          </div>
         </div>
       </div>
-      <a href="/doctors.html" class="block text-center text-sm font-medium text-brass py-4 border-t border-white/10 hover:bg-white/5 transition">See the full floor →</a>
+
+      <!-- Right: Live floor status card — hidden on small mobile, shown md+ -->
+      <div class="hidden sm:block glass-dark rounded-2xl overflow-hidden shadow-2xl">
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-white/10">
+          <span class="font-mono text-xs uppercase tracking-widest text-white/60">Live — right now</span>
+          <span class="flex items-center gap-1.5 text-xs text-emerald-300 font-mono"><span class="pulse-dot"></span> Live</span>
+        </div>
+        <div id="live-rail" class="divide-y divide-white/8">
+          <div class="px-4 py-3.5 space-y-2">
+            <div class="h-4 w-2/3 rounded-lg skel"></div>
+            <div class="h-3 w-1/3 rounded-lg skel"></div>
+          </div>
+          <div class="px-4 py-3.5 space-y-2">
+            <div class="h-4 w-3/4 rounded-lg skel"></div>
+            <div class="h-3 w-1/2 rounded-lg skel"></div>
+          </div>
+          <div class="px-4 py-3.5 space-y-2">
+            <div class="h-4 w-1/2 rounded-lg skel"></div>
+            <div class="h-3 w-1/3 rounded-lg skel"></div>
+          </div>
+        </div>
+        <a href="/doctors.html" class="flex items-center justify-center gap-2 text-sm font-semibold text-teal-light py-3.5 border-t border-white/10 hover:bg-white/5 transition active:bg-white/10">
+          View full availability
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- SPECIALTIES -->
-<section class="mx-auto max-w-7xl px-5 sm:px-8 py-20">
-  <div class="flex items-end justify-between mb-10">
+<!-- LIVE STATUS CARD (mobile-only, below hero) -->
+<section class="sm:hidden px-4 -mt-4 relative z-10 mb-4">
+  <div class="glass-dark rounded-2xl overflow-hidden shadow-xl border border-white/15">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+      <span class="font-mono text-xs uppercase tracking-widest text-white/60">Live floor status</span>
+      <span class="flex items-center gap-1.5 text-xs text-emerald-300 font-mono"><span class="pulse-dot"></span> Live</span>
+    </div>
+    <div id="live-rail-mobile" class="divide-y divide-white/8">
+      <div class="px-4 py-3 space-y-2">
+        <div class="h-4 w-2/3 rounded-lg skel"></div>
+        <div class="h-3 w-1/3 rounded-lg skel"></div>
+      </div>
+    </div>
+    <a href="/doctors.html" class="flex items-center justify-center gap-2 text-sm font-semibold text-teal-light py-3 border-t border-white/10 bg-white/5 active:bg-white/10">
+      See all doctors →
+    </a>
+  </div>
+</section>
+
+<!-- SPECIALTIES SECTION -->
+<section class="mx-auto max-w-7xl px-4 sm:px-8 py-10 sm:py-16">
+  <div class="flex items-end justify-between mb-6">
     <div>
-      <p class="font-mono text-xs uppercase tracking-widest text-teal mb-2">Departments</p>
-      <h2 class="font-display text-3xl sm:text-4xl">Search by specialty</h2>
+      <p class="font-mono text-xs uppercase tracking-widest text-teal mb-1.5">Departments</p>
+      <h2 class="font-display text-2xl sm:text-3xl">Browse by specialty</h2>
     </div>
-    <a href="/doctors.html" class="hidden sm:inline text-sm font-medium text-teal hover:underline brand-underline">View all doctors →</a>
+    <a href="/doctors.html" class="hidden sm:flex items-center gap-1 text-sm font-medium text-teal hover:underline">
+      All doctors <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+    </a>
   </div>
-  <div id="specialty-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+  <!-- Horizontal scroll on mobile, grid on desktop -->
+  <div id="specialty-scroll" class="flex gap-3 overflow-x-auto no-scrollbar pb-2 sm:hidden"></div>
+  <div id="specialty-grid" class="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+  <a href="/doctors.html" class="sm:hidden flex items-center justify-center gap-2 mt-5 text-sm font-medium text-teal">
+    See all 8 specialties →
+  </a>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="bg-white border-y border-ink/5">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8 py-20">
-    <p class="font-mono text-xs uppercase tracking-widest text-teal mb-2">How booking works</p>
-    <h2 class="font-display text-3xl sm:text-4xl mb-12 max-w-xl">Three steps, held instantly — nothing to confirm by phone.</h2>
-    <div class="grid md:grid-cols-3 gap-10">
-      <div>
-        <div class="font-display text-5xl text-brass mb-3">01</div>
-        <h3 class="font-semibold text-lg mb-2">Check who's free</h3>
-        <p class="text-ink/60 text-sm leading-relaxed">Every doctor profile shows a live status — available now, with a patient, or off duty — so you never book into a wait you didn't expect.</p>
+<!-- HOW IT WORKS — 3-step card strip on mobile -->
+<section class="bg-white border-y border-slate-100 py-10 sm:py-16">
+  <div class="mx-auto max-w-7xl px-4 sm:px-8">
+    <div class="text-center mb-8 sm:mb-10">
+      <p class="font-mono text-xs uppercase tracking-widest text-teal mb-2">Process</p>
+      <h2 class="font-display text-2xl sm:text-3xl max-w-sm mx-auto">Book in three simple steps</h2>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-4 sm:gap-8">
+      <div class="bg-canvas rounded-2xl p-5 border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center mb-3">
+          <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="font-mono text-xs text-teal/60 mb-1">Step 01</div>
+        <h3 class="font-semibold text-base mb-1.5">Check who's free</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">Every doctor shows a live status — available, busy, or off duty — so you know exactly who to book.</p>
       </div>
-      <div>
-        <div class="font-display text-5xl text-brass mb-3">02</div>
-        <h3 class="font-semibold text-lg mb-2">Pick your slot</h3>
-        <p class="text-ink/60 text-sm leading-relaxed">Browse real 30-minute openings across the next 7 days and reserve the one that fits your schedule.</p>
+      <div class="bg-canvas rounded-2xl p-5 border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center mb-3">
+          <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="font-mono text-xs text-teal/60 mb-1">Step 02</div>
+        <h3 class="font-semibold text-base mb-1.5">Pick your slot</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">Browse real 30-minute openings across the next 7 days — tap to reserve your slot instantly.</p>
       </div>
-      <div>
-        <div class="font-display text-5xl text-brass mb-3">03</div>
-        <h3 class="font-semibold text-lg mb-2">Pay your way</h3>
-        <p class="text-ink/60 text-sm leading-relaxed">Settle the consultation fee online now, or choose to pay at the front desk when you arrive. Your slot is held either way.</p>
+      <div class="bg-canvas rounded-2xl p-5 border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center mb-3">
+          <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </div>
+        <div class="font-mono text-xs text-teal/60 mb-1">Step 03</div>
+        <h3 class="font-semibold text-base mb-1.5">Pay your way</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">Pay online now or settle at the front desk on arrival. Your slot is held either way.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="mx-auto max-w-7xl px-5 sm:px-8 py-20 text-center">
-  <h2 class="font-display text-3xl sm:text-4xl max-w-2xl mx-auto">Your next appointment is a couple of taps away.</h2>
-  <a href="/doctors.html" class="inline-block mt-8 px-8 py-4 rounded-full bg-teal text-white font-semibold hover:bg-teal-dark transition">Browse available doctors</a>
+<!-- CTA BANNER -->
+<section class="mx-auto max-w-7xl px-4 sm:px-8 py-10 sm:py-14">
+  <div class="bg-ink rounded-2xl sm:rounded-3xl p-7 sm:p-12 text-white text-center relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-40 h-40 rounded-full bg-teal/20 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-brass/15 blur-3xl pointer-events-none"></div>
+    <div class="relative">
+      <h2 class="font-display text-2xl sm:text-4xl max-w-xl mx-auto mb-5">Your next appointment is a few taps away.</h2>
+      <a href="/doctors.html" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-teal font-semibold hover:bg-teal-dark transition shadow-lg shadow-teal/30 active:scale-95">
+        Browse available doctors
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </a>
+    </div>
+  </div>
 </section>
 
 <div id="site-footer"></div>
@@ -123,54 +205,67 @@
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
 <script>
+const specialtyIcons = {
+  'Cardiology': 'M12 21s-7.5-4.6-10-9.1C.6 8.4 2.6 5 6.2 5c2 0 3.4 1 4.8 2.6C12.4 6 13.8 5 15.8 5c3.6 0 5.6 3.4 4.2 6.9C19.5 16.4 12 21 12 21z',
+  'Orthopedics': 'M6 3v6a4 4 0 0 0 4 4h0a4 4 0 0 0 4-4V3M6 21v-6a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v6',
+  'Dermatology': 'M12 3c4 3 7 6.5 7 10.5A7 7 0 1 1 5 13.5C5 9.5 8 6 12 3z',
+  'Pediatrics': 'M12 3a3 3 0 0 1 3 3c0 1-.5 2-1.5 3M12 3a3 3 0 0 0-3 3c0 1 .5 2 1.5 3M6 21v-5a6 6 0 0 1 12 0v5',
+  'Neurology': 'M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0 0 6v1a3 3 0 0 0 3 3M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 0 6v1a3 3 0 0 1-3 3',
+  'General Medicine': 'M12 2v20M2 12h20',
+  'Gynecology': 'M12 2a5 5 0 0 1 5 5c0 3-2 4.5-5 7-3-2.5-5-4-5-7a5 5 0 0 1 5-5zM12 14v8M8 19h8',
+  'Dentistry': 'M12 3c-2.5 0-4.5 1.5-4.5 4 0 3 1 5 1.5 8s1 6 1.8 6 1-3 1.2-5 .5-3 1-3 .8 1 1 3 .4 5 1.2 5 1.3-3 1.8-6 1.5-5 1.5-8c0-2.5-2-4-4.5-4z',
+};
+
 async function loadLiveRail() {
-  const rail = document.getElementById('live-rail');
   try {
     const { doctors } = await Api.get('/doctors');
     const top = doctors.slice(0, 5);
-    rail.innerHTML = top.map(d => {
+    const rowHtml = (d) => {
       const b = statusBadge(d.availabilityStatus);
-      return `
-        <div class="ledger-row px-5 py-4 flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-sm font-medium truncate">${d.name}</div>
-            <div class="text-xs text-white/50 font-mono">${d.specialty}</div>
-          </div>
-          <span class="flex items-center gap-1.5 text-xs shrink-0"><span class="${b.dot}"></span>${b.label}</span>
-        </div>`;
-    }).join('');
+      return `<div class="px-4 py-3.5 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <div class="text-sm font-semibold text-white truncate">${d.name}</div>
+          <div class="text-xs text-white/50 font-mono">${d.specialty}</div>
+        </div>
+        <span class="flex items-center gap-1.5 text-xs shrink-0 ${b.cls.replace('ring-1','').trim()} bg-white/10 px-2.5 py-1 rounded-full border border-white/15"><span class="${b.dot}"></span>${b.label}</span>
+      </div>`;
+    };
+    const html = top.map(rowHtml).join('');
+    document.getElementById('live-rail').innerHTML = html;
+    const mobileRail = document.getElementById('live-rail-mobile');
+    if (mobileRail) mobileRail.innerHTML = top.slice(0, 3).map(rowHtml).join('');
   } catch {
-    rail.innerHTML = `<div class="px-5 py-6 text-sm text-white/50">Live status is temporarily unavailable.</div>`;
+    const msg = `<div class="px-4 py-5 text-sm text-white/40">Status temporarily unavailable.</div>`;
+    document.getElementById('live-rail').innerHTML = msg;
   }
 }
 
 async function loadSpecialties() {
-  const grid = document.getElementById('specialty-grid');
-  const icons = {
-    'Cardiology': 'M12 21s-7.5-4.6-10-9.1C.6 8.4 2.6 5 6.2 5c2 0 3.4 1 4.8 2.6C12.4 6 13.8 5 15.8 5c3.6 0 5.6 3.4 4.2 6.9C19.5 16.4 12 21 12 21z',
-    'Orthopedics': 'M6 3v6a4 4 0 0 0 4 4h0a4 4 0 0 0 4-4V3M6 21v-6a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v6',
-    'Dermatology': 'M12 3c4 3 7 6.5 7 10.5A7 7 0 1 1 5 13.5C5 9.5 8 6 12 3z',
-    'Pediatrics': 'M12 3a3 3 0 0 1 3 3c0 1-.5 2-1.5 3M12 3a3 3 0 0 0-3 3c0 1 .5 2 1.5 3M6 21v-5a6 6 0 0 1 12 0v5',
-    'Neurology': 'M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0 0 6v1a3 3 0 0 0 3 3M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 0 6v1a3 3 0 0 1-3 3',
-    'General Medicine': 'M12 2v20M2 12h20',
-    'Gynecology': 'M12 2a5 5 0 0 1 5 5c0 3-2 4.5-5 7-3-2.5-5-4-5-7a5 5 0 0 1 5-5zM12 14v8M8 19h8',
-    'Dentistry': 'M12 3c-2.5 0-4.5 1.5-4.5 4 0 3 1 5 1.5 8s1 6 1.8 6 1-3 1.2-5 .5-3 1-3 .8 1 1 3 .4 5 1.2 5 1.3-3 1.8-6 1.5-5 1.5-8c0-2.5-2-4-4.5-4z',
-  };
   try {
     const { specialties } = await Api.get('/doctors/specialties');
-    grid.innerHTML = specialties.map(s => `
-      <a href="/doctors.html?specialty=${encodeURIComponent(s)}" class="card-hover group bg-white border border-ink/8 rounded-xl p-5 flex items-start gap-4">
-        <svg class="w-8 h-8 text-teal shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="${icons[s] || 'M12 2v20M2 12h20'}"/>
-        </svg>
-        <div>
-          <div class="font-semibold">${s}</div>
-          <div class="text-xs text-ink/50 mt-1">View doctors →</div>
+    const cardHtml = (s, isMini) => {
+      const icon = specialtyIcons[s] || 'M12 2v20M2 12h20';
+      if (isMini) {
+        return `<a href="/doctors.html?specialty=${encodeURIComponent(s)}" class="flex-shrink-0 flex flex-col items-center gap-2 bg-white border border-slate-100 rounded-2xl px-4 py-3.5 touch-card shadow-sm">
+          <div class="w-9 h-9 rounded-xl bg-teal/10 flex items-center justify-center">
+            <svg class="w-5 h-5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${icon}"/></svg>
+          </div>
+          <span class="text-xs font-medium text-center leading-tight">${s}</span>
+        </a>`;
+      }
+      return `<a href="/doctors.html?specialty=${encodeURIComponent(s)}" class="flex items-center gap-3.5 bg-white border border-slate-100 rounded-2xl p-4 touch-card shadow-sm hover:border-teal/30 transition">
+        <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${icon}"/></svg>
         </div>
-      </a>`).join('');
-  } catch {
-    grid.innerHTML = `<p class="text-sm text-ink/50">Specialties are temporarily unavailable.</p>`;
-  }
+        <div>
+          <div class="font-semibold text-sm">${s}</div>
+          <div class="text-xs text-slate-400 mt-0.5">View doctors →</div>
+        </div>
+      </a>`;
+    };
+    document.getElementById('specialty-scroll').innerHTML = specialties.map(s => cardHtml(s, true)).join('');
+    document.getElementById('specialty-grid').innerHTML = specialties.map(s => cardHtml(s, false)).join('');
+  } catch {}
 }
 
 loadLiveRail();

@@ -1,71 +1,128 @@
-/* Meridian Health — brand layer on top of Tailwind's utility classes.
-   Design tokens:
-   ink      #0F2A2E  (deep teal-ink — nav/hero backdrops)
-   canvas   #F7F5F0  (warm clinical white — page background)
-   teal     #146B5E  (primary — trust, clinical calm)
-   brass    #C99A44  (accent — premium warmth, used sparingly)
-   available #2F8F5B  busy #C97A2E  off-duty #8B8577
-   Display face: Fraunces (headings) · Body/UI: Inter · Data/labels: IBM Plex Mono
+/* Meridian Health — Modern Mobile-First Design System
+   Sleek HSL Palette, Glassmorphism, Dynamic Micro-Animations, Touch Targets, and Mobile Navigation.
 */
 
 :root {
-  --ink: #0F2A2E;
-  --canvas: #F7F5F0;
-  --teal: #146B5E;
-  --teal-dark: #0E4E44;
-  --brass: #C99A44;
-  --available: #2F8F5B;
-  --busy: #C97A2E;
-  --offduty: #8B8577;
+  --ink: #07191D;
+  --ink-surface: #0E292E;
+  --canvas: #F4F7F6;
+  --white: #FFFFFF;
+  --teal: #0D9488;
+  --teal-dark: #0F766E;
+  --teal-light: #CCFBF1;
+  --brass: #D97706;
+  --brass-light: #FEF3C7;
+  --available: #10B981;
+  --busy: #F59E0B;
+  --offduty: #6B7280;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
 
 body {
   background-color: var(--canvas);
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  color: #16231F;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #111827;
+  padding-bottom: 4.5rem; /* Space for mobile bottom nav */
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 .font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
 .font-mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
 
-/* visible keyboard focus everywhere */
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Visible accessibility outline */
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--brass);
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
-/* status pulse dot for "available now" */
-.pulse-dot { position: relative; display: inline-block; width: 9px; height: 9px; border-radius: 999px; background: var(--available); flex-shrink: 0; }
+/* Pulse dot animation for online availability */
+.pulse-dot {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background-color: var(--available);
+  flex-shrink: 0;
+}
 .pulse-dot::after {
   content: '';
-  position: absolute; inset: -5px;
-  border-radius: 999px;
-  border: 1.5px solid var(--available);
-  animation: pulse-ring 2.2s cubic-bezier(0.2, 0.7, 0.4, 1) infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .pulse-dot::after { animation: none; opacity: .35; }
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  border: 2px solid var(--available);
+  animation: pulse-ring 2s cubic-bezier(0.2, 0.7, 0.4, 1) infinite;
 }
 @keyframes pulse-ring {
-  0% { transform: scale(0.7); opacity: .8; }
+  0% { transform: scale(0.7); opacity: 0.9; }
   80% { transform: scale(1.8); opacity: 0; }
   100% { transform: scale(1.8); opacity: 0; }
 }
 
-.status-dot-busy { background: var(--busy); }
-.status-dot-off { background: var(--offduty); }
+.status-dot-busy { background-color: var(--busy); }
+.status-dot-busy::after { border-color: var(--busy); }
 
-/* ledger-style divider used in the availability rail */
-.ledger-row + .ledger-row { border-top: 1px solid rgba(15,42,46,0.08); }
+.status-dot-off { background-color: var(--offduty); }
+.status-dot-off::after { display: none; }
 
-/* skeleton loading shimmer */
-.skel { background: linear-gradient(90deg, #eee7da 25%, #f4efe6 37%, #eee7da 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
-@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+/* Glassmorphism containers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
 
-.card-hover { transition: transform .18s ease, box-shadow .18s ease; }
-.card-hover:hover { transform: translateY(-3px); box-shadow: 0 12px 28px -12px rgba(15,42,46,0.25); }
+.glass-dark {
+  background: rgba(7, 25, 29, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-.brand-underline { text-decoration-color: var(--brass); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+/* Card hover and tap feedback */
+.touch-card {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.touch-card:active {
+  transform: scale(0.98);
+}
+@media (min-width: 640px) {
+  .touch-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px rgba(7, 25, 29, 0.12);
+  }
+}
+
+/* Skeleton shimmer loading */
+.skel {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* Mobile bottom nav active indicator */
+.nav-item.active {
+  color: var(--teal);
+}
+.nav-item.active svg {
+  stroke: var(--teal);
+  transform: translateY(-2px);
+}

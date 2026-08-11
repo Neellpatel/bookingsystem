@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Find a Doctor — Meridian Health</title>
+<meta name="description" content="Search and filter doctors by specialty, name, or availability. Book instantly.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = { theme: { extend: {
-    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    colors: { ink:'#07191D', canvas:'#F4F7F6', teal:'#0D9488', 'teal-dark':'#0F766E', 'teal-light':'#CCFBF1', brass:'#D97706', 'brass-light':'#FEF3C7', available:'#10B981', busy:'#F59E0B', offduty:'#6B7280' },
     fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
   } } };
 </script>
@@ -19,30 +20,39 @@
 
 <div id="site-header"></div>
 
+<!-- Search Header (sticky on mobile) -->
 <section class="bg-ink text-white">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8 py-12">
-    <p class="font-mono text-xs uppercase tracking-widest text-brass mb-2">The floor</p>
-    <h1 class="font-display text-3xl sm:text-4xl mb-6">Find a doctor</h1>
-    <div class="flex flex-col sm:flex-row gap-3">
-      <input id="q" type="text" placeholder="Search by doctor name or specialty…"
-        class="flex-1 rounded-full px-5 py-3 text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-brass" />
-      <select id="specialty" class="rounded-full px-5 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-brass">
-        <option value="">All specialties</option>
-      </select>
-      <label class="flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 cursor-pointer select-none">
-        <input id="availableOnly" type="checkbox" class="rounded accent-brass" />
-        <span class="text-sm">Available now only</span>
-      </label>
+  <div class="mx-auto max-w-7xl px-4 sm:px-8 py-7 sm:py-10">
+    <p class="font-mono text-xs uppercase tracking-widest text-teal mb-1.5 hidden sm:block">The floor</p>
+    <h1 class="font-display text-2xl sm:text-3xl mb-5">Find a doctor</h1>
+
+    <!-- Stacked search controls on mobile -->
+    <div class="flex flex-col gap-3">
+      <div class="relative">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input id="q" type="search" placeholder="Search by name or specialty…"
+          class="w-full pl-10 pr-4 py-3 rounded-xl text-ink placeholder:text-ink/40 text-sm focus:outline-none focus:ring-2 focus:ring-brass bg-white" />
+      </div>
+      <div class="flex gap-2">
+        <select id="specialty" class="flex-1 rounded-xl px-4 py-3 text-ink text-sm focus:outline-none focus:ring-2 focus:ring-brass bg-white">
+          <option value="">All specialties</option>
+        </select>
+        <label class="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/15 border border-white/20 cursor-pointer select-none shrink-0 active:bg-white/20">
+          <input id="availableOnly" type="checkbox" class="rounded accent-teal w-4 h-4" />
+          <span class="text-sm font-medium whitespace-nowrap">Available now</span>
+        </label>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="mx-auto max-w-7xl px-5 sm:px-8 py-10">
-  <div id="doctor-count" class="text-sm text-ink/50 mb-5 font-mono"></div>
-  <div id="doctor-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-    <div class="h-56 rounded-xl skel"></div>
-    <div class="h-56 rounded-xl skel"></div>
-    <div class="h-56 rounded-xl skel"></div>
+<!-- Doctor Grid -->
+<section class="mx-auto max-w-7xl px-4 sm:px-8 py-6 sm:py-10">
+  <div id="doctor-count" class="text-xs text-slate-400 mb-4 font-mono uppercase tracking-wide"></div>
+  <div id="doctor-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="h-48 rounded-2xl skel"></div>
+    <div class="h-48 rounded-2xl skel"></div>
+    <div class="h-48 rounded-2xl skel hidden sm:block"></div>
   </div>
 </section>
 
@@ -52,9 +62,9 @@
 <script src="/js/nav.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
-const seedColors = ['#146B5E','#C99A44','#0E4E44','#8B8577','#2F8F5B','#0F2A2E'];
-function seedColor(seed){ let h=0; for(const c of seed) h=(h*31+c.charCodeAt(0))>>>0; return seedColors[h % seedColors.length]; }
-function initials(name){ return name.replace('Dr. ','').split(' ').map(p=>p[0]).slice(0,2).join(''); }
+const seedColors = ['#0D9488','#D97706','#0F766E','#6B7280','#10B981','#07191D'];
+function seedColor(seed) { let h = 0; for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0; return seedColors[h % seedColors.length]; }
+function initials(name) { return name.replace('Dr. ', '').split(' ').map(p => p[0]).slice(0, 2).join(''); }
 
 async function loadSpecialtyOptions() {
   const sel = document.getElementById('specialty');
@@ -71,21 +81,36 @@ async function loadSpecialtyOptions() {
 
 function doctorCard(d) {
   const b = statusBadge(d.availabilityStatus);
+  const stars = '★'.repeat(Math.floor(d.rating)) + (d.rating % 1 >= 0.5 ? '½' : '');
   return `
-    <a href="/book.html?doctorId=${d.id}" class="card-hover bg-white border border-ink/8 rounded-xl p-5 flex flex-col gap-4">
+    <a href="/book.html?doctorId=${d.id}" class="touch-card bg-white border border-slate-100 rounded-2xl p-5 flex flex-col gap-4 shadow-sm hover:border-teal/30 transition group">
       <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-display text-lg shrink-0" style="background:${seedColor(d.photoSeed||d.name)}">${initials(d.name)}</div>
-        <div class="min-w-0">
-          <div class="font-semibold truncate">${d.name}</div>
-          <div class="text-xs text-ink/50 font-mono">${d.specialty}</div>
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-display text-xl shrink-0 shadow-inner" style="background:${seedColor(d.photoSeed||d.name)}">
+          ${initials(d.name)}
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="font-semibold text-base truncate">${d.name}</div>
+          <div class="text-xs text-slate-400 font-mono">${d.specialty}</div>
+          <div class="flex items-center gap-1 mt-1 text-amber-400 text-xs">
+            <span>${stars}</span>
+            <span class="text-slate-400">${d.rating} · ${d.experienceYears}y exp</span>
+          </div>
         </div>
       </div>
-      <p class="text-sm text-ink/60 leading-relaxed line-clamp-2">${d.bio || ''}</p>
-      <div class="flex items-center justify-between mt-auto pt-2 border-t border-ink/5">
-        <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full ring-1 ${b.cls}"><span class="${b.dot}"></span>${b.label}</span>
-        <span class="text-sm font-semibold font-mono">${money(d.consultationFee)}</span>
+      <p class="text-sm text-slate-500 leading-relaxed line-clamp-2">${d.bio || ''}</p>
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full ring-1 font-medium ${b.cls}">
+          <span class="${b.dot}"></span>${b.label}
+        </span>
+        <div class="text-right">
+          <div class="text-base font-bold font-mono text-ink">${money(d.consultationFee)}</div>
+          <div class="text-xs text-slate-400">per visit</div>
+        </div>
       </div>
-      <div class="text-xs text-ink/40">${d.experienceYears} yrs experience · ★ ${d.rating} · ${d.location}</div>
+      <div class="text-xs text-slate-400 flex items-center gap-1.5">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        ${d.location}
+      </div>
     </a>`;
 }
 
@@ -104,9 +129,9 @@ async function loadDoctors() {
     count.textContent = `${doctors.length} doctor${doctors.length === 1 ? '' : 's'} found`;
     grid.innerHTML = doctors.length
       ? doctors.map(doctorCard).join('')
-      : `<div class="col-span-full text-center py-16 text-ink/50">No doctors match those filters. Try widening your search.</div>`;
+      : `<div class="col-span-full text-center py-16 text-slate-400"><svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="font-medium">No doctors match those filters.</p><p class="text-sm mt-1">Try widening your search.</p></div>`;
   } catch {
-    grid.innerHTML = `<div class="col-span-full text-center py-16 text-ink/50">Couldn't load doctors right now. Please refresh.</div>`;
+    grid.innerHTML = `<div class="col-span-full text-center py-16 text-red-400 text-sm">Couldn't load doctors. Please refresh.</div>`;
   }
 }
 
