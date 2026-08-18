@@ -61,7 +61,7 @@ function fmtTime(t) {
   return `${h12}:${String(m).padStart(2, '0')} ${period}`;
 }
 
-function money(n) { return `$${Number(n).toFixed(0)}`; }
+function money(n) { return `₹${Number(n).toFixed(0)}`; }
 
 function statusBadge(status) {
   const map = {

@@ -161,14 +161,14 @@ async function initSchemaAndSeed(db) {
 
 async function seedDoctorsAndSlots(db) {
   const doctors = [
-    ['Dr. Amara Whitfield', 'Cardiology', 'Specialist in interventional cardiology and preventive heart care, focused on long-term wellbeing.', 'amara', 14, 120, 4.9, 'Tower A · Floor 3'],
-    ['Dr. Rajiv Menon', 'Orthopedics', 'Orthopedic surgeon specializing in sports injuries and joint replacement.', 'rajiv', 11, 100, 4.8, 'Tower B · Floor 1'],
-    ['Dr. Sofia Delgado', 'Dermatology', 'Board-certified dermatologist focused on medical and cosmetic skin health.', 'sofia', 9, 90, 4.9, 'Tower A · Floor 2'],
-    ['Dr. Ethan Park', 'Pediatrics', 'Pediatrician dedicated to compassionate, family-centered child healthcare.', 'ethan', 8, 80, 4.7, 'Tower C · Floor 1'],
-    ['Dr. Naledi Khumalo', 'Neurology', 'Neurologist with expertise in migraine management and stroke rehabilitation.', 'naledi', 16, 150, 4.9, 'Tower B · Floor 4'],
-    ['Dr. Marcus Bell', 'General Medicine', 'Primary care physician providing holistic, everyday family healthcare.', 'marcus', 6, 60, 4.6, 'Tower A · Floor 1'],
-    ['Dr. Hana Kobayashi', 'Gynecology', "Women's health specialist covering prenatal care through menopause.", 'hana', 12, 110, 4.9, 'Tower C · Floor 2'],
-    ['Dr. Liam O’Connor', 'Dentistry', 'Dental surgeon focused on restorative and cosmetic dentistry.', 'liam', 10, 70, 4.7, 'Tower D · Floor 1'],
+    ['Dr. Arjun Mehta', 'Cardiology', 'Specialist in interventional cardiology and preventive heart care, focused on long-term wellbeing.', 'arjun', 14, 1200, 4.9, 'Tower A · Floor 3'],
+    ['Dr. Rajiv Menon', 'Orthopedics', 'Orthopedic surgeon specializing in sports injuries and joint replacement.', 'rajiv', 11, 1000, 4.8, 'Tower B · Floor 1'],
+    ['Dr. Ananya Sharma', 'Dermatology', 'Board-certified dermatologist focused on medical and cosmetic skin health.', 'ananya', 9, 900, 4.9, 'Tower A · Floor 2'],
+    ['Dr. Kavya Iyer', 'Pediatrics', 'Pediatrician dedicated to compassionate, family-centered child healthcare.', 'kavya', 8, 800, 4.7, 'Tower C · Floor 1'],
+    ['Dr. Vikram Shah', 'Neurology', 'Neurologist with expertise in migraine management and stroke rehabilitation.', 'vikram', 16, 1500, 4.9, 'Tower B · Floor 4'],
+    ['Dr. Rohan Deshmukh', 'General Medicine', 'Primary care physician providing holistic, everyday family healthcare.', 'rohan', 6, 600, 4.6, 'Tower A · Floor 1'],
+    ['Dr. Priya Nair', 'Gynecology', "Women's health specialist covering prenatal care through menopause.", 'priya', 12, 1100, 4.9, 'Tower C · Floor 2'],
+    ['Dr. Sanjay Gupta', 'Dentistry', 'Dental surgeon focused on restorative and cosmetic dentistry.', 'sanjay', 10, 700, 4.7, 'Tower D · Floor 1'],
   ];
 
   const statuses = ['available', 'available', 'busy', 'available', 'off_duty', 'available', 'available', 'busy'];
