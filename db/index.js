@@ -214,6 +214,6 @@ async function seedUsers(db) {
   const demoPass = hashPassword('patient123');
   await db.run(
     `INSERT INTO users (name, email, phone, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?, ?)`,
-    ['Jordan Rivera', 'patient@meridianhealth.example', '+1 555 0101', demoPass.hash, demoPass.salt, 'patient']
+    ['Aarav Patel', 'patient@meridianhealth.example', '+91 98765 43210', demoPass.hash, demoPass.salt, 'patient']
   );
 }
