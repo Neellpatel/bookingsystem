@@ -482,6 +482,30 @@ route('GET', '/api/feedback', async (req, res) => {
   })) });
 });
 
+// ---- Refunds ----
+
+route('GET', '/api/refunds', async (req, res) => {
+  const user = await getSessionUser(req);
+  if (!user || (user.role !== 'staff' && user.role !== 'admin')) return sendJson(res, 403, { error: 'Staff access required.' });
+  const db = await getDb();
+  const rows = await db.all(`SELECT r.id, r.amount, r.reason, r.transaction_ref, r.status, r.created_at,
+    r.refunded_by, rb.name AS refunded_by_name,
+    a.patient_id, u.name AS patient_name, u.email AS patient_email,
+    a.doctor_id, d.name AS doctor_name, d.specialty AS specialty
+    FROM refunds r
+    JOIN appointments a ON a.id = r.appointment_id
+    JOIN users u ON u.id = a.patient_id
+    JOIN doctors d ON d.id = a.doctor_id
+    LEFT JOIN users rb ON rb.id = r.refunded_by
+    ORDER BY r.created_at DESC, r.id DESC LIMIT 500`);
+  sendJson(res, 200, { refunds: rows.map((r) => ({
+    id: r.id, transactionRef: r.transaction_ref, amount: r.amount, reason: r.reason,
+    status: r.status, patientName: r.patient_name, patientEmail: r.patient_email,
+    doctorName: r.doctor_name, specialty: r.specialty,
+    refundedBy: r.refunded_by_name || 'Patient', createdAt: r.created_at,
+  })) });
+});
+
 // ---------- Serverless & HTTP server ----------
 
 export default async function handler(req, res) {

@@ -33,6 +33,7 @@ function renderHeader(active) {
           <a href="/doctors.html" class="text-sm font-medium transition hover:text-brass ${isDoctors ? 'text-brass font-semibold' : 'text-white/80'}">Find a Doctor</a>
           ${loggedIn && !isStaff ? `<a href="/dashboard.html" class="text-sm font-medium transition hover:text-brass ${isDashboard ? 'text-brass font-semibold' : 'text-white/80'}">My Appointments</a>` : ''}
           ${isStaff ? `<a href="/reception/index.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-white/80'}">Reception Desk</a>` : `<a href="/reception/login.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-white/80'}">Staff Portal</a>`}
+          ${isStaff ? `<a href="/refunds.html" class="text-sm font-medium transition hover:text-brass ${active === 'refunds' ? 'text-brass font-semibold' : 'text-white/80'}">Refunds</a>` : ''}
         </nav>
 
         <!-- Right Header User Controls -->
@@ -91,6 +92,12 @@ function renderHeader(active) {
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
           <span>Desk</span>
+        </a>
+        <a href="/refunds.html" class="nav-item flex flex-col items-center gap-1 text-[11px] font-medium text-slate-500 hover:text-teal transition ${active === 'refunds' ? 'active text-teal' : ''}">
+          <svg class="w-5 h-5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h2m4 0h2M9 19h6a2 2 0 002-2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span>Refunds</span>
         </a>
       ` : ''}
 

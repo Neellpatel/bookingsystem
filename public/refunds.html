@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refunds — Doctor on Call</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', 'teal-dark':'#0E4E44', brass:'#C99A44', available:'#2F8F5B', busy:'#C97A2E', offduty:'#8B8577' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="refunds" class="bg-canvas text-ink">
+
+<div id="site-header"></div>
+
+<main class="mx-auto max-w-7xl px-5 sm:px-8 py-10">
+  <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-widest text-teal mb-1">Financial records</p>
+      <h1 class="font-display text-3xl">Refunds</h1>
+    </div>
+    <a href="/reception/index.html" class="text-sm text-teal hover:underline">← Back to reception desk</a>
+  </div>
+
+  <div id="summary" class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center mb-8"></div>
+
+  <div class="overflow-x-auto bg-white border border-ink/8 rounded-xl">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-ink/50 border-b border-ink/8 font-mono text-xs uppercase tracking-wide">
+          <th class="px-4 py-3">Ref</th>
+          <th class="px-4 py-3">Patient</th>
+          <th class="px-4 py-3">Doctor</th>
+          <th class="px-4 py-3">Amount</th>
+          <th class="px-4 py-3">Reason</th>
+          <th class="px-4 py-3">Date</th>
+          <th class="px-4 py-3">Handled by</th>
+        </tr>
+      </thead>
+      <tbody id="refund-table-body"><tr><td class="px-4 py-6 text-ink/40" colspan="7">Loading…</td></tr></tbody>
+    </table>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+if (!Auth.isLoggedIn() || !Auth.isStaff()) window.location.href = '/reception/login.html';
+
+async function loadRefunds() {
+  const body = document.getElementById('refund-table-body');
+  const sumEl = document.getElementById('summary');
+  try {
+    const { refunds } = await Api.get('/refunds');
+    const total = refunds.reduce((s, r) => s + Number(r.amount || 0), 0);
+    sumEl.innerHTML = `
+      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${refunds.length}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Refunds</div></div>
+      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">₹${total.toFixed(0)}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Total refunded</div></div>
+      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${refunds.length ? fmtDate(refunds[0].createdAt) : '—'}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Latest</div></div>
+    `;
+    body.innerHTML = refunds.length ? refunds.map(r => `
+      <tr class="border-b border-ink/5 last:border-0">
+        <td class="px-4 py-3 font-mono text-xs text-teal">${r.transactionRef || '—'}</td>
+        <td class="px-4 py-3">
+          <div class="font-medium">${r.patientName}</div>
+          <div class="text-xs text-ink/40">${r.patientEmail}</div>
+        </td>
+        <td class="px-4 py-3">
+          <div>${r.doctorName}</div>
+          <div class="text-xs text-ink/40 font-mono">${r.specialty}</div>
+        </td>
+        <td class="px-4 py-3 font-mono text-xs">₹${Number(r.amount).toFixed(0)}</td>
+        <td class="px-4 py-3 text-xs text-ink/70 max-w-[220px]">${r.reason || '—'}</td>
+        <td class="px-4 py-3 font-mono text-xs">${fmtDate(r.createdAt)}</td>
+        <td class="px-4 py-3 text-xs">${r.refundedBy}</td>
+      </tr>`).join('') : '<tr><td class="px-4 py-8 text-center text-ink/40" colspan="7">No refunds yet.</td></tr>';
+  } catch (e) {
+    body.innerHTML = `<tr><td class="px-4 py-6 text-red-600" colspan="7">${e.message}</td></tr>`;
+  }
+}
+
+loadRefunds();
+</script>
+</body>
+</html>
