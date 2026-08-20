@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Feedback — Doctor on Call</title>
+<meta name="description" content="Share your feedback about Doctor on Call and help us improve your healthcare experience.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#07191D', canvas:'#F4F7F6', teal:'#0D9488', 'teal-dark':'#0F766E', 'teal-light':'#CCFBF1', brass:'#D97706', 'brass-light':'#FEF3C7', available:'#10B981', busy:'#F59E0B', offduty:'#6B7280' },
+    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+  } } };
+</script>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="feedback" class="bg-canvas text-ink min-h-screen flex flex-col">
+
+<div id="site-header"></div>
+
+<main class="flex-1 px-4 py-10 sm:py-14">
+  <div class="w-full max-w-xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-ink shadow-xl mb-5">
+        <svg width="30" height="30" viewBox="0 0 26 26" fill="none">
+          <path d="M13 2 L13 24 M2 13 L24 13" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="13" cy="13" r="10" stroke="#F4F7F6" stroke-width="1.5" opacity="0.4"/>
+        </svg>
+      </div>
+      <h1 class="font-display text-2xl sm:text-3xl mb-2">We'd love your feedback</h1>
+      <p class="text-sm text-slate-400">Rate your experience and share what we can do better.</p>
+    </div>
+
+    <!-- Success state -->
+    <div id="success-card" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center mb-6">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-100 mb-3">
+        <svg class="w-7 h-7 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <h2 class="font-display text-xl font-semibold mb-1">Thank you!</h2>
+      <p class="text-sm text-emerald-700">Your feedback has been recorded. We appreciate you taking the time to share your experience.</p>
+      <button id="submit-another" class="mt-5 text-sm font-semibold text-teal hover:underline">Submit another response</button>
+    </div>
+
+    <!-- Form card -->
+    <form id="feedback-form" class="space-y-5 bg-white border border-slate-100 rounded-2xl p-6 sm:p-7 shadow-sm">
+      <!-- Star rating -->
+      <div>
+        <label class="text-sm font-semibold block mb-2">Your rating</label>
+        <div id="star-row" class="flex items-center gap-1.5">
+          <button type="button" data-rating="1" class="star-btn p-1 transition hover:scale-110 active:scale-95" aria-label="1 star">
+            <svg class="w-9 h-9 text-slate-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26 6.85.63-5.17 4.6 1.53 6.7L12 17.05 5.89 20.2l1.53-6.7-5.17-4.6 6.85-.63L12 2z"/></svg>
+          </button>
+          <button type="button" data-rating="2" class="star-btn p-1 transition hover:scale-110 active:scale-95" aria-label="2 stars">
+            <svg class="w-9 h-9 text-slate-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26 6.85.63-5.17 4.6 1.53 6.7L12 17.05 5.89 20.2l1.53-6.7-5.17-4.6 6.85-.63L12 2z"/></svg>
+          </button>
+          <button type="button" data-rating="3" class="star-btn p-1 transition hover:scale-110 active:scale-95" aria-label="3 stars">
+            <svg class="w-9 h-9 text-slate-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26 6.85.63-5.17 4.6 1.53 6.7L12 17.05 5.89 20.2l1.53-6.7-5.17-4.6 6.85-.63L12 2z"/></svg>
+          </button>
+          <button type="button" data-rating="4" class="star-btn p-1 transition hover:scale-110 active:scale-95" aria-label="4 stars">
+            <svg class="w-9 h-9 text-slate-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26 6.85.63-5.17 4.6 1.53 6.7L12 17.05 5.89 20.2l1.53-6.7-5.17-4.6 6.85-.63L12 2z"/></svg>
+          </button>
+          <button type="button" data-rating="5" class="star-btn p-1 transition hover:scale-110 active:scale-95" aria-label="5 stars">
+            <svg class="w-9 h-9 text-slate-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26 6.85.63-5.17 4.6 1.53 6.7L12 17.05 5.89 20.2l1.53-6.7-5.17-4.6 6.85-.63L12 2z"/></svg>
+          </button>
+          <span id="rating-label" class="ml-2 text-sm text-slate-400 font-medium self-center">Tap to rate</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold block mb-2" for="name">Your name</label>
+        <input id="name" autocomplete="name"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal transition bg-white"
+          placeholder="Aarav Patel" value="Aarav Patel">
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold block mb-2" for="email">Email address</label>
+        <input id="email" type="email" autocomplete="email"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal transition bg-white"
+          placeholder="you@example.com" value="patient@doctoroncall.example">
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold block mb-2" for="doctorName">Doctor you consulted (optional)</label>
+        <select id="doctorName" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal transition bg-white text-slate-700">
+          <option value="">General feedback</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold block mb-2" for="message">Your feedback</label>
+        <textarea id="message" required rows="4" placeholder="Share what you liked or how we can improve…"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal transition bg-white resize-none"></textarea>
+      </div>
+
+      <p id="feedback-error" class="text-sm text-red-500 hidden bg-red-50 border border-red-200 rounded-xl px-3 py-2.5"></p>
+
+      <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-2xl bg-teal text-white font-semibold hover:bg-teal-dark transition active:scale-95 shadow-lg shadow-teal/25 text-sm">
+        Submit feedback
+      </button>
+    </form>
+
+    <p class="text-xs text-slate-400 text-center mt-6">Your feedback helps us serve you better. Thanks for being part of Doctor on Call.</p>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+let selectedRating = 0;
+
+async function loadDoctors() {
+  const sel = document.getElementById('doctorName');
+  try {
+    const { doctors } = await Api.get('/doctors');
+    doctors.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.name; opt.textContent = d.name;
+      sel.appendChild(opt);
+    });
+  } catch {}
+}
+
+function setStars(rating) {
+  selectedRating = rating;
+  document.querySelectorAll('.star-btn svg').forEach((svg, i) => {
+    svg.classList.toggle('text-amber-400', i < rating);
+    svg.classList.toggle('text-slate-300', i >= rating);
+  });
+  const labels = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Very good', 5: 'Excellent' };
+  const label = document.getElementById('rating-label');
+  if (rating) label.textContent = labels[rating];
+  else label.textContent = 'Tap to rate';
+}
+
+document.querySelectorAll('.star-btn').forEach(btn => {
+  btn.addEventListener('click', () => setStars(Number(btn.dataset.rating)));
+});
+
+document.getElementById('feedback-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('feedback-error');
+  const btn = document.getElementById('submit-btn');
+  errEl.classList.add('hidden');
+  if (!selectedRating) {
+    errEl.textContent = 'Please choose a star rating first.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  const message = document.getElementById('message').value.trim();
+  if (!message) {
+    errEl.textContent = 'Please write your feedback.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  try {
+    await Api.post('/feedback', {
+      rating: selectedRating,
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      doctorName: document.getElementById('doctorName').value,
+      message,
+    });
+    document.getElementById('feedback-form').classList.add('hidden');
+    document.getElementById('success-card').classList.remove('hidden');
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+    btn.disabled = false; btn.textContent = 'Submit feedback';
+  }
+});
+
+document.getElementById('submit-another').addEventListener('click', () => {
+  document.getElementById('feedback-form').classList.remove('hidden');
+  document.getElementById('success-card').classList.add('hidden');
+  document.getElementById('message').value = '';
+  setStars(0);
+});
+
+loadDoctors();
+</script>
+</body>
+</html>

@@ -129,6 +129,7 @@ function renderFooter() {
             <li><a href="/doctors.html" class="hover:text-white transition">Find a doctor</a></li>
             <li><a href="/register.html" class="hover:text-white transition">Create an account</a></li>
             <li><a href="/dashboard.html" class="hover:text-white transition">My appointments</a></li>
+            <li><a href="/feedback.html" class="hover:text-white transition">Send feedback</a></li>
           </ul>
         </div>
         <div>

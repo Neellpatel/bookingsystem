@@ -413,6 +413,40 @@ route('GET', '/api/staff/summary', async (req, res) => {
   });
 });
 
+// ---- Feedback ----
+
+route('POST', '/api/feedback', async (req, res) => {
+  const user = await getSessionUser(req);
+  const body = await readBody(req);
+  const { rating, doctorName, message } = body;
+  const name = (body.name || '').trim();
+  const email = (body.email || '').trim();
+  if (!message || !String(message).trim()) {
+    return sendJson(res, 400, { error: 'Please write your feedback message.' });
+  }
+  const stars = Number(rating);
+  if (![1, 2, 3, 4, 5].includes(stars)) {
+    return sendJson(res, 400, { error: 'Please choose a rating between 1 and 5 stars.' });
+  }
+  const db = await getDb();
+  const info = await db.run(
+    `INSERT INTO feedback (user_id, name, email, rating, doctor_name, message) VALUES (?, ?, ?, ?, ?, ?)`,
+    [user ? user.id : null, name || (user ? user.name : 'Anonymous'), email || (user ? user.email : ''), stars, (doctorName || '').trim(), String(message).trim()]
+  );
+  sendJson(res, 201, { feedback: { id: info.lastInsertRowid, rating: stars } });
+});
+
+route('GET', '/api/feedback', async (req, res) => {
+  const user = await getSessionUser(req);
+  if (!user || (user.role !== 'staff' && user.role !== 'admin')) return sendJson(res, 403, { error: 'Staff access required.' });
+  const db = await getDb();
+  const rows = await db.all('SELECT * FROM feedback ORDER BY created_at DESC, id DESC LIMIT 200');
+  sendJson(res, 200, { feedback: rows.map((f) => ({
+    id: f.id, name: f.name, email: f.email, rating: f.rating,
+    doctorName: f.doctor_name, message: f.message, createdAt: f.created_at,
+  })) });
+});
+
 // ---------- Serverless & HTTP server ----------
 
 export default async function handler(req, res) {

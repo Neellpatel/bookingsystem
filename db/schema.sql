@@ -74,6 +74,19 @@ CREATE TABLE IF NOT EXISTS payments (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS feedback (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  email TEXT,
+  rating INTEGER NOT NULL DEFAULT 5,  -- 1..5 stars
+  doctor_name TEXT,
+  message TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(created_at);
+
 CREATE INDEX IF NOT EXISTS idx_slots_doctor_date ON doctor_slots(doctor_id, slot_date);
 CREATE INDEX IF NOT EXISTS idx_appts_patient ON appointments(patient_id);
 CREATE INDEX IF NOT EXISTS idx_appts_doctor ON appointments(doctor_id);
