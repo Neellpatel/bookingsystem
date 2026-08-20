@@ -85,6 +85,19 @@ CREATE TABLE IF NOT EXISTS feedback (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS refunds (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  appointment_id INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+  amount REAL NOT NULL,
+  reason TEXT,
+  transaction_ref TEXT,
+  status TEXT NOT NULL DEFAULT 'refunded', -- refunded | pending
+  refunded_by INTEGER REFERENCES users(id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_refunds_appt ON refunds(appointment_id);
+
 CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(created_at);
 
 CREATE INDEX IF NOT EXISTS idx_slots_doctor_date ON doctor_slots(doctor_id, slot_date);

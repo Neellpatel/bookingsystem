@@ -391,6 +391,41 @@ route('POST', '/api/payments/mock', async (req, res) => {
   sendJson(res, 200, { appointment: publicAppointment(updated), transactionRef: ref });
 });
 
+route('POST', '/api/payments/refund', async (req, res) => {
+  const user = await getSessionUser(req);
+  if (!user) return sendJson(res, 401, { error: 'Please sign in.' });
+  const { appointmentId, reason } = await readBody(req);
+  const db = await getDb();
+  const appt = await db.get('SELECT * FROM appointments WHERE id = ?', [appointmentId]);
+  if (!appt) return sendJson(res, 404, { error: 'Appointment not found.' });
+
+  const isOwner = Number(appt.patient_id) === Number(user.id);
+  const isStaff = user.role === 'staff' || user.role === 'admin';
+  if (!isOwner && !isStaff) return sendJson(res, 403, { error: 'Not authorized.' });
+
+  if (appt.payment_status !== 'paid') {
+    return sendJson(res, 400, { error: 'This appointment was not paid online, so there is nothing to refund.' });
+  }
+  if (appt.status === 'completed') {
+    return sendJson(res, 400, { error: 'Completed appointments cannot be refunded.' });
+  }
+  const existing = await db.get('SELECT * FROM refunds WHERE appointment_id = ?', [appt.id]);
+  if (existing) return sendJson(res, 409, { error: 'This appointment has already been refunded.' });
+
+  const ref = 'RFD' + randomBytes(6).toString('hex').toUpperCase();
+  const nowISO = new Date().toISOString();
+  await db.run(`INSERT INTO refunds (appointment_id, amount, reason, transaction_ref, status, refunded_by) VALUES (?, ?, ?, ?, 'refunded', ?)`,
+    [appt.id, appt.amount, (reason || '').trim(), ref, user.id]);
+
+  await db.run(`UPDATE appointments SET payment_status = 'refunded', status = 'cancelled', updated_at = ? WHERE id = ?`, [nowISO, appt.id]);
+  if (appt.slot_id) {
+    await db.run('UPDATE doctor_slots SET is_booked = 0 WHERE id = ?', [appt.slot_id]);
+  }
+
+  const updated = await db.get(APPT_SELECT + ' WHERE a.id = ?', [appt.id]);
+  sendJson(res, 200, { appointment: publicAppointment(updated), refund: { transactionRef: ref, amount: appt.amount } });
+});
+
 // ---- Dashboard stats (staff) ----
 
 route('GET', '/api/staff/summary', async (req, res) => {

@@ -85,6 +85,19 @@ CREATE TABLE IF NOT EXISTS feedback (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS refunds (
+  id SERIAL PRIMARY KEY,
+  appointment_id INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+  amount NUMERIC(10, 2) NOT NULL,
+  reason TEXT,
+  transaction_ref VARCHAR(100),
+  status VARCHAR(50) NOT NULL DEFAULT 'refunded',
+  refunded_by INTEGER REFERENCES users(id),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_refunds_appt ON refunds(appointment_id);
+
 CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(created_at);
 
 CREATE INDEX IF NOT EXISTS idx_slots_doctor_date ON doctor_slots(doctor_id, slot_date);

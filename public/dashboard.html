@@ -67,6 +67,8 @@ function apptCard(a) {
   const upcoming = ['pending', 'confirmed'].includes(a.status);
   const statusClass = statusColors[a.status] || statusColors.pending;
   const isPaid = a.paymentStatus === 'paid';
+  const isRefunded = a.paymentStatus === 'refunded';
+  const canRefund = isPaid && ['pending', 'confirmed'].includes(a.status);
   return `
     <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-sm touch-card">
       <!-- Top row: Doctor + status badge -->
@@ -89,17 +91,22 @@ function apptCard(a) {
         </div>
       </div>
       ${a.reason ? `<p class="text-xs text-slate-400 italic mb-3">"${a.reason}"</p>` : ''}
-      <!-- Bottom row: payment + cancel -->
+      <!-- Bottom row: payment + actions -->
       <div class="flex items-center justify-between border-t border-slate-100 pt-3">
         <div class="flex items-center gap-1.5 text-xs">
-          ${isPaid
-            ? `<span class="flex items-center gap-1 text-emerald-600 font-medium"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Paid · ${money(a.amount)}</span>`
-            : a.paymentMethod === 'online'
-              ? `<span class="text-amber-600 font-medium flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>Payment pending · ${money(a.amount)}</span>`
-              : `<span class="text-slate-400 flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2z"/></svg>Pay at hospital · ${money(a.amount)}</span>`
+          ${isRefunded
+            ? `<span class="flex items-center gap-1 text-blue-600 font-medium"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l4-4m-4 4l4 4"/></svg>Refunded · ${money(a.amount)}</span>`
+            : isPaid
+              ? `<span class="flex items-center gap-1 text-emerald-600 font-medium"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Paid · ${money(a.amount)}</span>`
+              : a.paymentMethod === 'online'
+                ? `<span class="text-amber-600 font-medium flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>Payment pending · ${money(a.amount)}</span>`
+                : `<span class="text-slate-400 flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2z"/></svg>Pay at hospital · ${money(a.amount)}</span>`
           }
         </div>
-        ${upcoming ? `<button data-id="${a.id}" class="cancel-btn text-xs text-red-500 hover:text-red-700 font-medium px-3 py-1.5 rounded-xl hover:bg-red-50 transition active:scale-95">Cancel</button>` : ''}
+        <div class="flex items-center gap-2">
+          ${canRefund ? `<button data-id="${a.id}" data-amount="${a.amount}" class="refund-btn text-xs text-blue-600 hover:text-blue-800 font-medium px-3 py-1.5 rounded-xl hover:bg-blue-50 transition active:scale-95">Request refund</button>` : ''}
+          ${upcoming ? `<button data-id="${a.id}" class="cancel-btn text-xs text-red-500 hover:text-red-700 font-medium px-3 py-1.5 rounded-xl hover:bg-red-50 transition active:scale-95">Cancel</button>` : ''}
+        </div>
       </div>
     </div>`;
 }
@@ -117,6 +124,7 @@ async function load() {
            <a href="/doctors.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-teal text-white font-medium hover:bg-teal-dark transition active:scale-95 text-sm">Browse doctors</a>
          </div>`;
     list.querySelectorAll('.cancel-btn').forEach(btn => btn.addEventListener('click', () => cancelAppt(btn.dataset.id)));
+    list.querySelectorAll('.refund-btn').forEach(btn => btn.addEventListener('click', () => requestRefund(btn.dataset.id, btn.dataset.amount)));
   } catch (e) {
     list.innerHTML = `<p class="text-red-500 text-sm text-center py-8">${e.message}</p>`;
   }
@@ -126,6 +134,18 @@ async function cancelAppt(id) {
   if (!confirm('Cancel this appointment? This cannot be undone.')) return;
   try {
     await Api.patch('/appointments/' + id, { status: 'cancelled' });
+    load();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function requestRefund(id, amount) {
+  const msg = `Request a refund of ${amount} for this appointment? The appointment will be cancelled and the slot freed up.`;
+  if (!confirm(msg)) return;
+  try {
+    await Api.post('/payments/refund', { appointmentId: id, reason: 'Patient requested refund' });
+    alert('Refund processed. Your payment has been refunded and the appointment cancelled.');
     load();
   } catch (e) {
     alert(e.message);
