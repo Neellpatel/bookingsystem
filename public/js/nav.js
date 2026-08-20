@@ -24,15 +24,15 @@ function renderHeader(active) {
               <circle cx="13" cy="13" r="10" stroke="#F4F7F6" stroke-width="1.5" opacity="0.4"/>
             </svg>
           </div>
-          <span class="font-display text-lg tracking-tight font-semibold text-[var(--ink)]">Doctor on Call</span>
+          <span class="font-display text-lg tracking-tight font-semibold text-white">Doctor on Call</span>
         </a>
 
         <!-- Desktop Navigation Links -->
         <nav class="hidden md:flex items-center gap-8">
-          <a href="/index.html" class="text-sm font-medium transition hover:text-brass ${isHome ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Home</a>
-          <a href="/doctors.html" class="text-sm font-medium transition hover:text-brass ${isDoctors ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Find a Doctor</a>
-          ${loggedIn && !isStaff ? `<a href="/dashboard.html" class="text-sm font-medium transition hover:text-brass ${isDashboard ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">My Appointments</a>` : ''}
-          ${isStaff ? `<a href="/reception/index.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Reception Desk</a>` : `<a href="/reception/login.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Staff Portal</a>`}
+          <a href="/index.html" class="text-sm font-medium transition hover:text-brass ${isHome ? 'text-brass font-semibold' : 'text-white/80'}">Home</a>
+          <a href="/doctors.html" class="text-sm font-medium transition hover:text-brass ${isDoctors ? 'text-brass font-semibold' : 'text-white/80'}">Find a Doctor</a>
+          ${loggedIn && !isStaff ? `<a href="/dashboard.html" class="text-sm font-medium transition hover:text-brass ${isDashboard ? 'text-brass font-semibold' : 'text-white/80'}">My Appointments</a>` : ''}
+          ${isStaff ? `<a href="/reception/index.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-white/80'}">Reception Desk</a>` : `<a href="/reception/login.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-white/80'}">Staff Portal</a>`}
         </nav>
 
         <!-- Right Header User Controls -->
