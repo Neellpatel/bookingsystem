@@ -15,7 +15,7 @@ function renderHeader(active) {
 
   el.innerHTML = `
     <!-- Top Mobile & Desktop Navigation Header -->
-    <header class="bg-ink text-white sticky top-0 z-40 border-b border-white/10 backdrop-blur-md bg-ink/95">
+    <header class="sticky top-0 z-40 border-b border-[var(--border-light)] backdrop-blur-md bg-[var(--header-bg)]">
       <div class="mx-auto max-w-7xl px-4 sm:px-8 h-16 flex items-center justify-between">
         <a href="/index.html" class="flex items-center gap-2.5 shrink-0" aria-label="Doctor on Call home">
           <div class="w-9 h-9 rounded-xl bg-teal/20 border border-teal/40 flex items-center justify-center shadow-inner">
@@ -24,26 +24,35 @@ function renderHeader(active) {
               <circle cx="13" cy="13" r="10" stroke="#F4F7F6" stroke-width="1.5" opacity="0.4"/>
             </svg>
           </div>
-          <span class="font-display text-lg tracking-tight font-semibold">Doctor on Call</span>
+          <span class="font-display text-lg tracking-tight font-semibold text-[var(--ink)]">Doctor on Call</span>
         </a>
 
         <!-- Desktop Navigation Links -->
         <nav class="hidden md:flex items-center gap-8">
-          <a href="/index.html" class="text-sm font-medium transition hover:text-brass ${isHome ? 'text-brass font-semibold' : 'text-white/80'}">Home</a>
-          <a href="/doctors.html" class="text-sm font-medium transition hover:text-brass ${isDoctors ? 'text-brass font-semibold' : 'text-white/80'}">Find a Doctor</a>
-          ${loggedIn && !isStaff ? `<a href="/dashboard.html" class="text-sm font-medium transition hover:text-brass ${isDashboard ? 'text-brass font-semibold' : 'text-white/80'}">My Appointments</a>` : ''}
-          ${isStaff ? `<a href="/reception/index.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-white/80'}">Reception Desk</a>` : `<a href="/reception/login.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-white/80'}">Staff Portal</a>`}
+          <a href="/index.html" class="text-sm font-medium transition hover:text-brass ${isHome ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Home</a>
+          <a href="/doctors.html" class="text-sm font-medium transition hover:text-brass ${isDoctors ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Find a Doctor</a>
+          ${loggedIn && !isStaff ? `<a href="/dashboard.html" class="text-sm font-medium transition hover:text-brass ${isDashboard ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">My Appointments</a>` : ''}
+          ${isStaff ? `<a href="/reception/index.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Reception Desk</a>` : `<a href="/reception/login.html" class="text-sm font-medium transition hover:text-brass ${isReception ? 'text-brass font-semibold' : 'text-[var(--ink)]/80'}">Staff Portal</a>`}
         </nav>
 
         <!-- Right Header User Controls -->
         <div class="flex items-center gap-3">
+          <!-- Theme Toggle -->
+          <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <svg class="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            <svg class="sun-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </button>
           ${loggedIn
             ? `<div class="flex items-center gap-2">
-                 <span class="hidden sm:inline text-xs font-mono text-white/70 bg-white/10 px-2.5 py-1 rounded-full border border-white/15">${user?.name || 'User'}</span>
-                 <button id="logout-btn" class="text-xs font-medium px-3.5 py-2 rounded-full border border-white/20 hover:bg-white/10 transition active:scale-95">Sign out</button>
+                 <span class="hidden sm:inline text-xs font-mono text-[var(--ink)]/70 bg-[var(--bg-card)] px-2.5 py-1 rounded-full border border-[var(--border-light)]">${user?.name || 'User'}</span>
+                 <button id="logout-btn" class="text-xs font-medium px-3.5 py-2 rounded-full border border-[var(--border-light)] hover:bg-[var(--bg-input)] transition active:scale-95 text-[var(--ink)]">Sign out</button>
                </div>`
             : `<div class="flex items-center gap-2">
-                 <a href="/login.html" class="text-xs font-medium px-3.5 py-2 rounded-full border border-white/20 hover:bg-white/10 transition active:scale-95">Sign in</a>
+                 <a href="/login.html" class="text-xs font-medium px-3.5 py-2 rounded-full border border-[var(--border-light)] hover:bg-[var(--bg-input)] transition active:scale-95 text-[var(--ink)]">Sign in</a>
                  <a href="/register.html" class="text-xs font-semibold px-4 py-2 rounded-full bg-brass text-ink hover:brightness-110 transition shadow-sm active:scale-95">Book Now</a>
                </div>`
           }
@@ -134,8 +143,28 @@ function renderFooter() {
   `;
 }
 
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   const page = document.body.getAttribute('data-page') || '';
   renderHeader(page);
   renderFooter();
+
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
 });
