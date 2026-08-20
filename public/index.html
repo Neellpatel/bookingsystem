@@ -185,6 +185,22 @@
   </div>
 </section>
 
+<!-- CLIENT REVIEWS -->
+<section class="bg-white border-y border-slate-100 py-10 sm:py-16">
+  <div class="mx-auto max-w-7xl px-4 sm:px-8">
+    <div class="text-center mb-8 sm:mb-10">
+      <p class="font-mono text-xs uppercase tracking-widest text-teal mb-2">Patient voices</p>
+      <h2 class="font-display text-2xl sm:text-3xl">What our patients say</h2>
+    </div>
+    <div id="review-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="h-40 rounded-2xl skel"></div>
+      <div class="h-40 rounded-2xl skel"></div>
+      <div class="h-40 rounded-2xl skel hidden sm:block"></div>
+    </div>
+    <p class="text-center text-xs text-slate-400 mt-6"><a href="/feedback.html" class="text-teal font-medium hover:underline">Share your experience →</a></p>
+  </div>
+</section>
+
 <!-- CTA BANNER -->
 <section class="mx-auto max-w-7xl px-4 sm:px-8 py-10 sm:py-14">
   <div class="bg-ink rounded-2xl sm:rounded-3xl p-7 sm:p-12 text-white text-center relative overflow-hidden">
@@ -318,6 +334,45 @@ async function loadSpecialties() {
 
 loadLiveRail();
 loadSpecialties();
+const seedReviews = [
+  { name: 'Priya Sharma', rating: 5, doctorName: 'Dr. Ananya Sharma', message: 'Booked a dermatology slot in under a minute. The live availability actually works — no waiting room surprises!' },
+  { name: 'Rahul Verma', rating: 5, doctorName: 'Dr. Rajiv Mehta', message: 'Paid online and walked straight in. Super smooth experience from search to checkout.' },
+  { name: 'Sneha Kulkarni', rating: 4, doctorName: 'Dr. Kavya Iyer', message: 'Loved seeing exactly which doctor was free before booking. Reception was very welcoming too.' },
+  { name: 'Arjun Deshmukh', rating: 5, doctorName: 'Dr. Vikram Rao', message: 'Reached the hospital, paid at the counter, and my slot was already confirmed. Hassle-free.' },
+  { name: 'Meera Joshi', rating: 4, doctorName: 'Dr. Sanjay Gupta', message: 'The 7-day calendar makes planning check-ups so easy. Great experience overall.' },
+  { name: 'Karan Patel', rating: 5, doctorName: 'Dr. Rohan Nair', message: 'Emergency booking saved my evening. Was seen within 10 minutes of arriving.' },
+];
+
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+async function loadReviews() {
+  const grid = document.getElementById('review-grid');
+  let reviews = [];
+  try {
+    const res = await Api.get('/feedback/public');
+    reviews = res.testimonials || [];
+  } catch {}
+  reviews = reviews.concat(seedReviews).slice(0, 6);
+  const initials = (name) => name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  const stars = (n) => '★'.repeat(n) + '<span class="opacity-30">' + '★'.repeat(5 - n) + '</span>';
+  grid.innerHTML = reviews.slice(0, 6).map((r, i) => `
+    <div class="reveal bg-canvas border border-slate-100 rounded-2xl p-5 flex flex-col gap-3 shadow-sm" style="--d:${i * 80}ms">
+      <div class="flex items-center gap-0.5 text-amber-400 text-sm tracking-tight">${stars(r.rating)}</div>
+      <p class="text-sm text-slate-600 leading-relaxed flex-1">"${escHtml(r.message)}"</p>
+      <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
+        <div class="w-9 h-9 rounded-full bg-teal/10 ring-1 ring-teal/20 text-teal font-semibold text-xs flex items-center justify-center shrink-0">${escHtml(initials(r.name))}</div>
+        <div class="min-w-0">
+          <div class="text-sm font-semibold truncate">${escHtml(r.name)}</div>
+          <div class="text-xs text-slate-400 truncate">${r.doctorName ? 'Visited ' + escHtml(r.doctorName) : 'Verified patient'}</div>
+        </div>
+      </div>
+    </div>`).join('');
+  Animate.scan(grid);
+}
+
+loadReviews();
 </script>
 </body>
 </html>

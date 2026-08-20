@@ -482,6 +482,14 @@ route('GET', '/api/feedback', async (req, res) => {
   })) });
 });
 
+route('GET', '/api/feedback/public', async (req, res) => {
+  const db = await getDb();
+  const rows = await db.all(`SELECT * FROM feedback WHERE rating >= 4 AND length(trim(message)) > 0 ORDER BY created_at DESC, id DESC LIMIT 6`);
+  sendJson(res, 200, { testimonials: rows.map((f) => ({
+    id: f.id, name: f.name, rating: f.rating, doctorName: f.doctor_name || '', message: f.message, createdAt: f.created_at,
+  })) });
+});
+
 // ---- Refunds ----
 
 route('GET', '/api/refunds', async (req, res) => {
