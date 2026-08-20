@@ -162,7 +162,7 @@ function renderFooter() {
             </li>
             <li class="flex items-start gap-2 leading-relaxed text-white/60">
               <svg class="w-3.5 h-3.5 shrink-0 text-teal mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <a href="https://www.google.com/maps/search/?api=1&query=Vision%20Tower%20MG%20Road%20Pune%20Maharashtra%20411001" target="_blank" rel="noopener" class="hover:text-white transition">Vision Tower, 3rd Floor, MG Road, Pune, Maharashtra 411001<br><span class="text-teal">Open in Google Maps →</span></a>
+              <a href="https://www.google.com/maps/search/?api=1&query=Indus%20University%20Rancharda%20Shilaj%20Gujarat%20382115" target="_blank" rel="noopener" class="hover:text-white transition">Indus University, Rancharda, via Shilaj, Gujarat 382115<br><span class="text-teal">Open in Google Maps →</span></a>
             </li>
           </ul>
         </div>
