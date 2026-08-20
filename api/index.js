@@ -1,5 +1,5 @@
 // api/index.js
-// Vercel Serverless Function entry point for Meridian Health API routes.
+// Vercel Serverless Function entry point for Doctor on Call API routes.
 
 import { handleApi, sendJson } from '../server.js';
 import { getDb } from '../db/index.js';

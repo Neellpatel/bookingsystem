@@ -1,4 +1,4 @@
--- Meridian Health Clinic — SQL Schema (PostgreSQL)
+-- Doctor on Call Clinic — SQL Schema (PostgreSQL)
 -- Compatible with Neon, Supabase, Vercel Postgres, Railway, and standard PostgreSQL.
 
 CREATE TABLE IF NOT EXISTS users (

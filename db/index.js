@@ -208,12 +208,12 @@ async function seedUsers(db) {
   const staffPass = hashPassword('reception123');
   await db.run(
     `INSERT INTO users (name, email, phone, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?, ?)`,
-    ['Front Desk Staff', 'reception@meridianhealth.example', '+1 555 0100', staffPass.hash, staffPass.salt, 'staff']
+    ['Front Desk Staff', 'reception@doctoroncall.example', '+1 555 0100', staffPass.hash, staffPass.salt, 'staff']
   );
 
   const demoPass = hashPassword('patient123');
   await db.run(
     `INSERT INTO users (name, email, phone, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?, ?)`,
-    ['Aarav Patel', 'patient@meridianhealth.example', '+91 98765 43210', demoPass.hash, demoPass.salt, 'patient']
+    ['Aarav Patel', 'patient@doctoroncall.example', '+91 98765 43210', demoPass.hash, demoPass.salt, 'patient']
   );
 }

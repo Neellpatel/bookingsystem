@@ -1,4 +1,4 @@
--- Meridian Health Clinic — SQL Schema (SQLite)
+-- Doctor on Call Clinic — SQL Schema (SQLite)
 -- All persistent data for the platform lives in this relational schema.
 
 CREATE TABLE IF NOT EXISTS users (

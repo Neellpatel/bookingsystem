@@ -1,4 +1,4 @@
-# Meridian Health — Project Notes
+# Doctor on Call — Project Notes
 
 ## Live Deployment
 - **Production URL:** https://bookingsystem-sooty-eta.vercel.app
@@ -8,8 +8,8 @@
 ## Demo Credentials
 | Role    | Email                                   | Password     |
 |---------|-----------------------------------------|--------------|
-| Patient | patient@meridianhealth.example          | patient123   |
-| Staff   | reception@meridianhealth.example        | reception123 |
+| Patient | patient@doctoroncall.example          | patient123   |
+| Staff   | reception@doctoroncall.example        | reception123 |
 
 ## Git History
 | Commit  | Description                                                          |
