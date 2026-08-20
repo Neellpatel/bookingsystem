@@ -79,7 +79,10 @@ async function loadRefunds() {
           <div>${r.doctorName}</div>
           <div class="text-xs text-ink/40 font-mono">${r.specialty}</div>
         </td>
-        <td class="px-4 py-3 font-mono text-xs">₹${Number(r.amount).toFixed(0)}</td>
+        <td class="px-4 py-3 font-mono text-xs">
+          ₹${Number(r.amount).toFixed(0)}
+          <div class="text-[10px] text-ink/40">30% of ₹${Number(r.originalAmount).toFixed(0)}</div>
+        </td>
         <td class="px-4 py-3 text-xs text-ink/70 max-w-[220px]">${r.reason || '—'}</td>
         <td class="px-4 py-3 font-mono text-xs">${fmtDate(r.createdAt)}</td>
         <td class="px-4 py-3 text-xs">${r.refundedBy}</td>

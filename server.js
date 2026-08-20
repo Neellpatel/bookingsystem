@@ -414,8 +414,9 @@ route('POST', '/api/payments/refund', async (req, res) => {
 
   const ref = 'RFD' + randomBytes(6).toString('hex').toUpperCase();
   const nowISO = new Date().toISOString();
+  const refundAmount = Math.round(Number(appt.amount) * 30) / 100;
   await db.run(`INSERT INTO refunds (appointment_id, amount, reason, transaction_ref, status, refunded_by) VALUES (?, ?, ?, ?, 'refunded', ?)`,
-    [appt.id, appt.amount, (reason || '').trim(), ref, user.id]);
+    [appt.id, refundAmount, (reason || '').trim(), ref, user.id]);
 
   await db.run(`UPDATE appointments SET payment_status = 'refunded', status = 'cancelled', updated_at = ? WHERE id = ?`, [nowISO, appt.id]);
   if (appt.slot_id) {
@@ -423,7 +424,7 @@ route('POST', '/api/payments/refund', async (req, res) => {
   }
 
   const updated = await db.get(APPT_SELECT + ' WHERE a.id = ?', [appt.id]);
-  sendJson(res, 200, { appointment: publicAppointment(updated), refund: { transactionRef: ref, amount: appt.amount } });
+  sendJson(res, 200, { appointment: publicAppointment(updated), refund: { transactionRef: ref, amount: refundAmount, originalAmount: Number(appt.amount) } });
 });
 
 // ---- Dashboard stats (staff) ----
@@ -498,7 +499,7 @@ route('GET', '/api/refunds', async (req, res) => {
   const db = await getDb();
   const rows = await db.all(`SELECT r.id, r.amount, r.reason, r.transaction_ref, r.status, r.created_at,
     r.refunded_by, rb.name AS refunded_by_name,
-    a.patient_id, u.name AS patient_name, u.email AS patient_email,
+    a.patient_id, a.amount AS original_amount, u.name AS patient_name, u.email AS patient_email,
     a.doctor_id, d.name AS doctor_name, d.specialty AS specialty
     FROM refunds r
     JOIN appointments a ON a.id = r.appointment_id
@@ -507,7 +508,7 @@ route('GET', '/api/refunds', async (req, res) => {
     LEFT JOIN users rb ON rb.id = r.refunded_by
     ORDER BY r.created_at DESC, r.id DESC LIMIT 500`);
   sendJson(res, 200, { refunds: rows.map((r) => ({
-    id: r.id, transactionRef: r.transaction_ref, amount: r.amount, reason: r.reason,
+    id: r.id, transactionRef: r.transaction_ref, amount: r.amount, originalAmount: r.original_amount, reason: r.reason,
     status: r.status, patientName: r.patient_name, patientEmail: r.patient_email,
     doctorName: r.doctor_name, specialty: r.specialty,
     refundedBy: r.refunded_by_name || 'Patient', createdAt: r.created_at,
@@ -539,7 +540,7 @@ const ASSISTANT = {
   },
   refund: {
     match: /(refund|money back|reimburse)/i,
-    reply: `If you paid online and haven't completed your visit yet:\n\n1) Go to My Appointments, 2) tap "Request refund", or ask the reception desk.\n\nThe amount is refunded to you, the appointment is cancelled and the slot is freed for someone else. Completed or unpaid appointments can't be refunded.`,
+    reply: `If you paid online and haven't completed your visit yet:\n\n1) Go to My Appointments, 2) tap "Request refund", or ask the reception desk.\n\n30% of the paid amount is refunded (70% is a cancellation fee). The appointment is cancelled and the slot is freed for someone else. Completed or unpaid appointments can't be refunded.`,
     suggestions: ['Book a doctor', 'Fees & payments', 'Cancel my appointment'],
   },
   cancel: {

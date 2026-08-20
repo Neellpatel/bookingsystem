@@ -144,11 +144,14 @@ async function cancelAppt(id) {
 }
 
 async function requestRefund(id, amount) {
-  const msg = `Request a refund of ${amount} for this appointment? The appointment will be cancelled and the slot freed up.`;
+  const paid = Number(amount);
+  const back = Math.round(paid * 30) / 100;
+  const fee = paid - back;
+  const msg = `Request a refund for this appointment?\n\nPaid: ₹${paid.toFixed(0)}\nRefunded (30%): ₹${back.toFixed(0)}\nCancellation fee (70%): ₹${fee.toFixed(0)}\n\nThe appointment will be cancelled and the slot freed up.`;
   if (!confirm(msg)) return;
   try {
     await Api.post('/payments/refund', { appointmentId: id, reason: 'Patient requested refund' });
-    alert('Refund processed. Your payment has been refunded and the appointment cancelled.');
+    alert(`Refund of ₹${back.toFixed(0)} (30%) processed. The appointment has been cancelled.`);
     load();
   } catch (e) {
     alert(e.message);

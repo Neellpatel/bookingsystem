@@ -177,7 +177,7 @@ async function loadAppointments() {
             ${a.status === 'pending' ? `<button data-id="${a.id}" data-status="confirmed" class="act-btn text-xs px-2.5 py-1 rounded-full bg-teal text-white">Confirm</button>` : ''}
             ${a.status === 'confirmed' ? `<button data-id="${a.id}" data-status="completed" class="act-btn text-xs px-2.5 py-1 rounded-full bg-ink text-white">Complete</button>` : ''}
             ${['pending','confirmed'].includes(a.status) ? `<button data-id="${a.id}" data-status="cancelled" class="act-btn text-xs px-2.5 py-1 rounded-full border border-red-300 text-red-600">Cancel</button>` : ''}
-            ${a.paymentStatus === 'paid' && ['pending','confirmed'].includes(a.status) ? `<button data-id="${a.id}" class="refund-btn text-xs px-2.5 py-1 rounded-full border border-blue-300 text-blue-600">Refund</button>` : ''}
+            ${a.paymentStatus === 'paid' && ['pending','confirmed'].includes(a.status) ? `<button data-id="${a.id}" data-amount="${a.amount}" class="refund-btn text-xs px-2.5 py-1 rounded-full border border-blue-300 text-blue-600">Refund</button>` : ''}
           </div>
         </td>
       </tr>`).join('') : '<tr><td class="px-4 py-8 text-center text-ink/40" colspan="6">No appointments match these filters.</td></tr>';
@@ -187,10 +187,12 @@ async function loadAppointments() {
       catch (e) { alert(e.message); }
     }));
     body.querySelectorAll('.refund-btn').forEach(btn => btn.addEventListener('click', async () => {
-      if (!confirm('Process a refund for this appointment? The appointment will be cancelled and the slot freed.')) return;
+      const paid = Number(btn.dataset.amount || 0);
+      const back = Math.round(paid * 30) / 100;
+      if (!confirm(`Process a refund for this appointment?\n\nPaid: ₹${paid.toFixed(0)}\nRefunded (30%): ₹${back.toFixed(0)}\nCancellation fee (70%): ₹${(paid - back).toFixed(0)}\n\nThe appointment will be cancelled and the slot freed.`)) return;
       try {
         await Api.post('/payments/refund', { appointmentId: btn.dataset.id, reason: 'Refunded at reception desk' });
-        alert('Refund processed successfully.');
+        alert(`Refund of ₹${back.toFixed(0)} (30%) processed successfully.`);
         loadAppointments(); loadStats();
       } catch (e) { alert(e.message); }
     }));
