@@ -23,7 +23,7 @@
 <main class="flex-1 px-4 py-10 sm:py-14">
   <div class="w-full max-w-xl mx-auto">
     <!-- Header -->
-    <div class="text-center mb-8">
+    <div class="text-center mb-8 anim-fade-up">
       <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-ink shadow-xl mb-5">
         <svg width="30" height="30" viewBox="0 0 26 26" fill="none">
           <path d="M13 2 L13 24 M2 13 L24 13" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/>
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Form card -->
-    <form id="feedback-form" class="space-y-5 bg-white border border-slate-100 rounded-2xl p-6 sm:p-7 shadow-sm">
+    <form id="feedback-form" class="reveal space-y-5 bg-white border border-slate-100 rounded-2xl p-6 sm:p-7 shadow-sm" style="--d:120ms">
       <!-- Star rating -->
       <div>
         <label class="text-sm font-semibold block mb-2">Your rating</label>
@@ -111,6 +111,7 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
+<script src="/js/anim.js"></script>
 <script>
 let selectedRating = 0;
 
@@ -128,9 +129,10 @@ async function loadDoctors() {
 
 function setStars(rating) {
   selectedRating = rating;
-  document.querySelectorAll('.star-btn svg').forEach((svg, i) => {
-    svg.classList.toggle('text-amber-400', i < rating);
-    svg.classList.toggle('text-slate-300', i >= rating);
+  document.querySelectorAll('.star-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i < rating);
+    btn.querySelector('svg').classList.toggle('text-amber-400', i < rating);
+    btn.querySelector('svg').classList.toggle('text-slate-300', i >= rating);
   });
   const labels = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Very good', 5: 'Excellent' };
   const label = document.getElementById('rating-label');
@@ -168,7 +170,9 @@ document.getElementById('feedback-form').addEventListener('submit', async (e) =>
       message,
     });
     document.getElementById('feedback-form').classList.add('hidden');
-    document.getElementById('success-card').classList.remove('hidden');
+    const success = document.getElementById('success-card');
+    success.classList.remove('hidden');
+    success.classList.add('pop-in');
   } catch (err) {
     errEl.textContent = err.message;
     errEl.classList.remove('hidden');

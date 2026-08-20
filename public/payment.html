@@ -96,6 +96,7 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
+<script src="/js/anim.js"></script>
 <script>
 const appointmentId = new URLSearchParams(location.search).get('appointmentId');
 let appt = null;
@@ -111,7 +112,9 @@ async function init() {
     document.getElementById('p-time').textContent = `${fmtDate(appt.date)} · ${fmtTime(appt.startTime)}`;
     document.getElementById('p-amount').textContent = money(appt.amount);
     document.getElementById('loading').classList.add('hidden');
-    document.getElementById('pay-view').classList.remove('hidden');
+    const pv = document.getElementById('pay-view');
+    pv.classList.remove('hidden');
+    pv.classList.add('anim-zoom-in');
   } catch {
     document.getElementById('loading').textContent = 'Could not load this appointment.';
   }
@@ -144,7 +147,9 @@ document.getElementById('pay-form').addEventListener('submit', async (e) => {
     });
     document.getElementById('pay-view').classList.add('hidden');
     document.getElementById('txn-ref').textContent = 'Reference: ' + transactionRef;
-    document.getElementById('success-view').classList.remove('hidden');
+    const sv = document.getElementById('success-view');
+    sv.classList.remove('hidden');
+    sv.classList.add('pop-in');
   } catch (e) {
     errEl.textContent = e.message;
     errEl.classList.remove('hidden');

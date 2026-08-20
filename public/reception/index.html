@@ -117,6 +117,7 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
+<script src="/js/anim.js"></script>
 <script>
 if (!Auth.isLoggedIn() || !Auth.isStaff()) window.location.href = '/reception/login.html';
 
@@ -135,11 +136,12 @@ async function loadStats() {
   try {
     const s = await Api.get('/staff/summary');
     document.getElementById('stats').innerHTML = `
-      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.todayCount}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Today</div></div>
-      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.pending}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Pending</div></div>
-      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.confirmed}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Confirmed today</div></div>
-      <div class="bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.doctorsAvailable}/${s.doctorsTotal}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Doctors free</div></div>
+      <div class="reveal bg-white border border-ink/8 rounded-lg px-4 py-2.5"><div class="text-lg font-display">${s.todayCount}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Today</div></div>
+      <div class="reveal bg-white border border-ink/8 rounded-lg px-4 py-2.5" style="--d:60ms"><div class="text-lg font-display">${s.pending}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Pending</div></div>
+      <div class="reveal bg-white border border-ink/8 rounded-lg px-4 py-2.5" style="--d:120ms"><div class="text-lg font-display">${s.confirmed}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Confirmed today</div></div>
+      <div class="reveal bg-white border border-ink/8 rounded-lg px-4 py-2.5" style="--d:180ms"><div class="text-lg font-display">${s.doctorsAvailable}/${s.doctorsTotal}</div><div class="text-[11px] text-ink/50 font-mono uppercase">Doctors free</div></div>
     `;
+    Animate.scan(document.getElementById('stats'));
   } catch {}
 }
 
@@ -156,8 +158,8 @@ async function loadAppointments() {
   if (status) qs.set('status', status);
   try {
     const { appointments } = await Api.get('/appointments?' + qs.toString());
-    body.innerHTML = appointments.length ? appointments.map(a => `
-      <tr class="border-b border-ink/5 last:border-0">
+    body.innerHTML = appointments.length ? appointments.map((a, i) => `
+      <tr class="reveal border-b border-ink/5 last:border-0" style="--d:${i * 45}ms">
         <td class="px-4 py-3">
           <div class="font-medium">${a.patientName}</div>
           <div class="text-xs text-ink/40">${a.patientPhone || ''}</div>
@@ -178,6 +180,7 @@ async function loadAppointments() {
           </div>
         </td>
       </tr>`).join('') : '<tr><td class="px-4 py-8 text-center text-ink/40" colspan="6">No appointments match these filters.</td></tr>';
+    Animate.scan(body);
     body.querySelectorAll('.act-btn').forEach(btn => btn.addEventListener('click', async () => {
       try { await Api.patch('/appointments/' + btn.dataset.id, { status: btn.dataset.status }); loadAppointments(); loadStats(); }
       catch (e) { alert(e.message); }

@@ -35,8 +35,8 @@
 <!-- HERO SECTION — mobile-first gradient -->
 <section class="relative overflow-hidden bg-ink text-white">
   <!-- Glowing orb decorations -->
-  <div class="absolute top-0 right-0 w-64 h-64 rounded-full bg-teal/20 blur-[80px] pointer-events-none"></div>
-  <div class="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-brass/15 blur-[60px] pointer-events-none"></div>
+  <div class="absolute top-0 right-0 w-64 h-64 rounded-full bg-teal/20 blur-[80px] pointer-events-none float-slow"></div>
+  <div class="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-brass/15 blur-[60px] pointer-events-none float-slower"></div>
 
   <div class="relative mx-auto max-w-7xl px-5 sm:px-8 pt-10 pb-12 sm:pt-16 sm:pb-20">
     <!-- Mobile: stacked, Desktop: side-by-side -->
@@ -44,20 +44,20 @@
 
       <!-- Left: Headline + CTAs -->
       <div class="text-center lg:text-left">
-        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-5">
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-5 anim-fade-up" style="animation-delay:0.05s">
           <span class="pulse-dot flex-shrink-0"></span>
           <span class="font-mono text-xs tracking-wide text-white/80">8 doctors available now</span>
         </div>
-        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight">
+        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight anim-fade-up" style="animation-delay:0.15s">
           See a specialist<br>
           <span class="italic text-teal">who's actually free</span><br>
           this week.
         </h1>
-        <p class="mt-5 text-white/65 text-base sm:text-lg max-w-md mx-auto lg:mx-0 leading-relaxed">
+        <p class="mt-5 text-white/65 text-base sm:text-lg max-w-md mx-auto lg:mx-0 leading-relaxed anim-fade-up" style="animation-delay:0.28s">
           Real-time availability, instant booking, flexible payment. Your seat is held the moment you confirm.
         </p>
-        <div class="mt-7 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-          <a href="/doctors.html" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-teal font-semibold hover:bg-teal-dark transition shadow-lg shadow-teal/30 active:scale-95 text-base">
+        <div class="mt-7 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start anim-fade-up" style="animation-delay:0.4s">
+          <a href="/doctors.html" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-teal font-semibold hover:bg-teal-dark transition shadow-lg shadow-teal/30 active:scale-95 text-base arrow-nudge">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             Find a doctor
           </a>
@@ -83,7 +83,7 @@
       </div>
 
       <!-- Right: Live floor status card — hidden on small mobile, shown md+ -->
-      <div class="hidden sm:block glass-dark rounded-2xl overflow-hidden shadow-2xl">
+      <div class="hidden sm:block glass-dark rounded-2xl overflow-hidden shadow-2xl anim-zoom-in" style="animation-delay:0.5s">
         <div class="flex items-center justify-between px-4 py-3.5 border-b border-white/10">
           <span class="font-mono text-xs uppercase tracking-widest text-white/60">Live — right now</span>
           <span class="flex items-center gap-1.5 text-xs text-emerald-300 font-mono"><span class="pulse-dot"></span> Live</span>
@@ -102,7 +102,7 @@
             <div class="h-3 w-1/3 rounded-lg skel"></div>
           </div>
         </div>
-        <a href="/doctors.html" class="flex items-center justify-center gap-2 text-sm font-semibold text-teal-light py-3.5 border-t border-white/10 hover:bg-white/5 transition active:bg-white/10">
+        <a href="/doctors.html" class="arrow-nudge flex items-center justify-center gap-2 text-sm font-semibold text-teal-light py-3.5 border-t border-white/10 hover:bg-white/5 transition active:bg-white/10">
           View full availability
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
         </a>
@@ -157,7 +157,7 @@
       <h2 class="font-display text-2xl sm:text-3xl max-w-sm mx-auto">Book in three simple steps</h2>
     </div>
     <div class="grid sm:grid-cols-3 gap-4 sm:gap-8">
-      <div class="bg-canvas rounded-2xl p-5 border border-slate-100">
+      <div class="reveal bg-canvas rounded-2xl p-5 border border-slate-100" style="--d:0ms">
         <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center mb-3">
           <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg>
         </div>
@@ -165,7 +165,7 @@
         <h3 class="font-semibold text-base mb-1.5">Check who's free</h3>
         <p class="text-sm text-slate-500 leading-relaxed">Every doctor shows a live status — available, busy, or off duty — so you know exactly who to book.</p>
       </div>
-      <div class="bg-canvas rounded-2xl p-5 border border-slate-100">
+      <div class="reveal bg-canvas rounded-2xl p-5 border border-slate-100" style="--d:120ms">
         <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center mb-3">
           <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         </div>
@@ -173,7 +173,7 @@
         <h3 class="font-semibold text-base mb-1.5">Pick your slot</h3>
         <p class="text-sm text-slate-500 leading-relaxed">Browse real 30-minute openings across the next 7 days — tap to reserve your slot instantly.</p>
       </div>
-      <div class="bg-canvas rounded-2xl p-5 border border-slate-100">
+      <div class="reveal bg-canvas rounded-2xl p-5 border border-slate-100" style="--d:240ms">
         <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center mb-3">
           <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
         </div>
@@ -190,9 +190,9 @@
   <div class="bg-ink rounded-2xl sm:rounded-3xl p-7 sm:p-12 text-white text-center relative overflow-hidden">
     <div class="absolute top-0 right-0 w-40 h-40 rounded-full bg-teal/20 blur-3xl pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-brass/15 blur-3xl pointer-events-none"></div>
-    <div class="relative">
+    <div class="relative reveal">
       <h2 class="font-display text-2xl sm:text-4xl max-w-xl mx-auto mb-5">Your next appointment is a few taps away.</h2>
-      <a href="/doctors.html" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-teal font-semibold hover:bg-teal-dark transition shadow-lg shadow-teal/30 active:scale-95">
+      <a href="/doctors.html" class="arrow-nudge inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-teal font-semibold hover:bg-teal-dark transition shadow-lg shadow-teal/30 active:scale-95">
         Browse available doctors
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
       </a>
@@ -204,6 +204,7 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
+<script src="/js/anim.js"></script>
 <script>
 const specialtyIcons = {
   'Cardiology': 'M12 21s-7.5-4.6-10-9.1C.6 8.4 2.6 5 6.2 5c2 0 3.4 1 4.8 2.6C12.4 6 13.8 5 15.8 5c3.6 0 5.6 3.4 4.2 6.9C19.5 16.4 12 21 12 21z',
@@ -220,9 +221,9 @@ async function loadLiveRail() {
   try {
     const { doctors } = await Api.get('/doctors');
     const top = doctors.slice(0, 5);
-    const rowHtml = (d) => {
+    const rowHtml = (d, i) => {
       const b = statusBadge(d.availabilityStatus);
-      return `<div class="px-4 py-3.5 flex items-center justify-between gap-3">
+      return `<div class="px-4 py-3.5 flex items-center justify-between gap-3 rail-row" style="animation-delay:${i * 90}ms">
         <div class="min-w-0">
           <div class="text-sm font-semibold text-white truncate">${d.name}</div>
           <div class="text-xs text-white/50 font-mono">${d.specialty}</div>
@@ -243,17 +244,17 @@ async function loadLiveRail() {
 async function loadSpecialties() {
   try {
     const { specialties } = await Api.get('/doctors/specialties');
-    const cardHtml = (s, isMini) => {
+    const cardHtml = (s, isMini, i) => {
       const icon = specialtyIcons[s] || 'M12 2v20M2 12h20';
       if (isMini) {
-        return `<a href="/doctors.html?specialty=${encodeURIComponent(s)}" class="flex-shrink-0 flex flex-col items-center gap-2 bg-white border border-slate-100 rounded-2xl px-4 py-3.5 touch-card shadow-sm">
+        return `<a href="/doctors.html?specialty=${encodeURIComponent(s)}" class="reveal flex-shrink-0 flex flex-col items-center gap-2 bg-white border border-slate-100 rounded-2xl px-4 py-3.5 touch-card shadow-sm" style="--d:${i * 60}ms">
           <div class="w-9 h-9 rounded-xl bg-teal/10 flex items-center justify-center">
             <svg class="w-5 h-5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${icon}"/></svg>
           </div>
           <span class="text-xs font-medium text-center leading-tight">${s}</span>
         </a>`;
       }
-      return `<a href="/doctors.html?specialty=${encodeURIComponent(s)}" class="flex items-center gap-3.5 bg-white border border-slate-100 rounded-2xl p-4 touch-card shadow-sm hover:border-teal/30 transition">
+      return `<a href="/doctors.html?specialty=${encodeURIComponent(s)}" class="reveal flex items-center gap-3.5 bg-white border border-slate-100 rounded-2xl p-4 touch-card shadow-sm hover:border-teal/30 transition" style="--d:${i * 60}ms">
         <div class="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center shrink-0">
           <svg class="w-5 h-5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${icon}"/></svg>
         </div>
@@ -263,8 +264,10 @@ async function loadSpecialties() {
         </div>
       </a>`;
     };
-    document.getElementById('specialty-scroll').innerHTML = specialties.map(s => cardHtml(s, true)).join('');
-    document.getElementById('specialty-grid').innerHTML = specialties.map(s => cardHtml(s, false)).join('');
+    const miniHtml = specialties.map((s, i) => cardHtml(s, true, i)).join('');
+    document.getElementById('specialty-scroll').innerHTML = miniHtml;
+    document.getElementById('specialty-grid').innerHTML = specialties.map((s, i) => cardHtml(s, false, i)).join('');
+    Animate.scan();
   } catch {}
 }
 

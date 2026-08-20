@@ -9,10 +9,15 @@
 <script>tailwind.config = { theme: { extend: { colors: { ink:'#0F2A2E', canvas:'#F7F5F0', teal:'#146B5E', brass:'#C99A44' }, fontFamily: { display:['Fraunces','serif'], sans:['Inter','sans-serif'] } } } };</script>
 </head>
 <body class="bg-canvas text-ink font-sans min-h-screen flex items-center justify-center">
-  <div class="text-center px-6">
+  <div class="text-center px-6 anim-fade-up">
     <p class="font-mono text-sm text-brass mb-3">404</p>
     <h1 class="font-display text-3xl mb-4">This page took a wrong turn.</h1>
-    <a href="/index.html" class="inline-block px-6 py-3 rounded-full bg-teal text-white font-medium">Back to Doctor on Call</a>
+    <a href="/index.html" class="inline-block px-6 py-3 rounded-full bg-teal text-white font-medium hover:brightness-110 transition active:scale-95">Back to Doctor on Call</a>
   </div>
+  <style>
+    @media (prefers-reduced-motion: reduce) { .anim-fade-up { animation: none !important; opacity: 1 !important; } }
+    @keyframes anim-fade-up { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .anim-fade-up { animation: anim-fade-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  </style>
 </body>
 </html>

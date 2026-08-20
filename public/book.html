@@ -21,7 +21,7 @@
 
 <!-- Sign in gate -->
 <div id="signin-gate" class="hidden min-h-[70vh] flex items-center justify-center px-5 py-20">
-  <div class="text-center max-w-sm w-full">
+  <div class="text-center max-w-sm w-full anim-fade-up">
     <div class="w-16 h-16 rounded-2xl bg-teal/10 flex items-center justify-center mx-auto mb-5">
       <svg class="w-8 h-8 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
     </div>
@@ -36,7 +36,7 @@
 
 <main id="booking-main" class="hidden max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
   <!-- Doctor summary card -->
-  <div id="doctor-summary" class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-6 mb-6 shadow-sm"></div>
+  <div id="doctor-summary" class="reveal bg-white border border-slate-100 rounded-2xl p-4 sm:p-6 mb-6 shadow-sm"></div>
 
   <!-- Mobile: stacked, Desktop: side-by-side -->
   <div class="grid lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-8">
@@ -99,7 +99,7 @@
     </div>
 
     <!-- Right: Booking Summary (sticky on desktop, below steps on mobile) -->
-    <aside class="bg-white border border-slate-100 rounded-2xl p-5 h-fit lg:sticky lg:top-24 shadow-sm">
+    <aside class="reveal bg-white border border-slate-100 rounded-2xl p-5 h-fit lg:sticky lg:top-24 shadow-sm" style="--d:120ms">
       <h3 class="font-display text-lg mb-4">Booking summary</h3>
       <dl class="space-y-3 text-sm">
         <div class="flex justify-between items-center"><dt class="text-slate-400">Doctor</dt><dd id="sum-doctor" class="font-medium text-right max-w-[60%] text-ellipsis overflow-hidden">—</dd></div>
@@ -122,6 +122,7 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
+<script src="/js/anim.js"></script>
 <script>
 const doctorId = new URLSearchParams(location.search).get('doctorId');
 let selectedDate = null, selectedSlot = null, doctor = null;
@@ -222,10 +223,11 @@ async function selectDate(date, i) {
   grid.innerHTML = '<div class="h-11 rounded-xl skel"></div><div class="h-11 rounded-xl skel"></div><div class="h-11 rounded-xl skel"></div>';
   try {
     const { slots } = await Api.get(`/doctors/${doctorId}/slots?date=${date}`);
-    grid.innerHTML = slots.length ? slots.map(s => `
-      <button class="slot-btn px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono hover:border-teal transition active:scale-95" data-slot-id="${s.id}" data-start="${s.startTime}" data-end="${s.endTime}">
+    grid.innerHTML = slots.length ? slots.map((s, i) => `
+      <button class="slot-btn reveal px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono hover:border-teal transition active:scale-95" data-slot-id="${s.id}" data-start="${s.startTime}" data-end="${s.endTime}" style="--d:${i * 45}ms">
         ${fmtTime(s.startTime)}
       </button>`).join('') : '<p class="col-span-full text-sm text-slate-400 py-4">No openings this day — try another date.</p>';
+    Animate.scan(grid);
     grid.querySelectorAll('.slot-btn').forEach(btn => btn.addEventListener('click', () => selectSlot(btn)));
   } catch {
     grid.innerHTML = '<p class="col-span-full text-sm text-red-500 py-4">Could not load time slots.</p>';

@@ -19,7 +19,7 @@
 
 <div id="site-header"></div>
 
-<main class="mx-auto max-w-sm px-5 py-20">
+<main class="mx-auto max-w-sm px-5 py-20 anim-fade-up">
   <p class="font-mono text-xs uppercase tracking-widest text-brass mb-2">Staff only</p>
   <h1 class="font-display text-3xl mb-2">Reception portal</h1>
   <p class="text-white/60 text-sm mb-8">Take appointments on behalf of patients, and keep doctor availability up to date.</p>
@@ -46,6 +46,7 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
+<script src="/js/anim.js"></script>
 <script>
 if (Auth.isLoggedIn() && Auth.isStaff()) window.location.href = '/reception/index.html';
 

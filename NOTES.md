@@ -2,7 +2,6 @@
 
 ## Live Deployment
 - **Production URL:** https://bookingsystem-sooty-eta.vercel.app
-- **GitHub Repo:** https://github.com/patelakshdev/bookingsystem
 - **Vercel Dashboard:** https://vercel.com/vars2/bookingsystem
 
 ## Demo Credentials

@@ -48,6 +48,7 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/nav.js"></script>
+<script src="/js/anim.js"></script>
 <script>
 if (!Auth.isLoggedIn()) window.location.href = '/login.html?redirect=' + encodeURIComponent('/dashboard.html');
 if (Auth.isStaff()) window.location.href = '/reception/index.html';
@@ -63,14 +64,14 @@ const statusColors = {
   cancelled: 'bg-slate-100 text-slate-500 ring-slate-200',
 };
 
-function apptCard(a) {
+function apptCard(a, i) {
   const upcoming = ['pending', 'confirmed'].includes(a.status);
   const statusClass = statusColors[a.status] || statusColors.pending;
   const isPaid = a.paymentStatus === 'paid';
   const isRefunded = a.paymentStatus === 'refunded';
   const canRefund = isPaid && ['pending', 'confirmed'].includes(a.status);
   return `
-    <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-sm touch-card">
+    <div class="reveal bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-sm touch-card" style="--d:${i * 90}ms">
       <!-- Top row: Doctor + status badge -->
       <div class="flex items-start justify-between gap-3 mb-3">
         <div>
@@ -123,6 +124,7 @@ async function load() {
            <p class="text-sm text-slate-400 mb-5">Find a doctor and book your first slot.</p>
            <a href="/doctors.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-teal text-white font-medium hover:bg-teal-dark transition active:scale-95 text-sm">Browse doctors</a>
          </div>`;
+    Animate.scan(list);
     list.querySelectorAll('.cancel-btn').forEach(btn => btn.addEventListener('click', () => cancelAppt(btn.dataset.id)));
     list.querySelectorAll('.refund-btn').forEach(btn => btn.addEventListener('click', () => requestRefund(btn.dataset.id, btn.dataset.amount)));
   } catch (e) {
