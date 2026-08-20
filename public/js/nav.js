@@ -134,7 +134,6 @@ function renderFooter() {
           <div class="text-white text-xs font-mono uppercase tracking-wider mb-3">Quick Navigation</div>
           <ul class="space-y-2 text-xs">
             <li><a href="/doctors.html" class="hover:text-white transition">Find a doctor</a></li>
-            <li><a href="/doctors.html" class="hover:text-white transition">Book an appointment</a></li>
             <li><a href="/register.html" class="hover:text-white transition">Create an account</a></li>
             <li><a href="/dashboard.html" class="hover:text-white transition">My appointments</a></li>
             <li><a href="/feedback.html" class="hover:text-white transition">Send feedback</a></li>
@@ -144,9 +143,9 @@ function renderFooter() {
           <div class="text-white text-xs font-mono uppercase tracking-wider mb-3">Contact us</div>
           <ul class="space-y-2.5 text-xs">
             <li>
-              <a href="https://wa.me/919173740210?text=I%20need%20emergency%20help" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-white transition">
+              <a href="https://wa.me/919586333534?text=I%20need%20emergency%20help" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-white transition">
                 <svg class="w-3.5 h-3.5 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-                Emergency helpline
+                Emergency helpline · +91 95863 33534
               </a>
             </li>
             <li>
