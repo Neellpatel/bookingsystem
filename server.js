@@ -514,6 +514,90 @@ route('GET', '/api/refunds', async (req, res) => {
   })) });
 });
 
+// ---- AI health assistant (rule-based) ----
+
+const ASSISTANT = {
+  greeting: {
+    match: /^(hi|hii+|hello|hey|namaste|good (morning|afternoon|evening)|yo|hola)\b/i,
+    reply: `Hello! 👋 I'm your Doctor on Call assistant.\n\nI can help you with:\n• Finding & booking a doctor\n• Payments, refunds & cancellations\n• Clinic contact & address\n• Simple symptom guidance\n\nWhat do you need help with today?`,
+    suggestions: ['Book an appointment', 'Fees & payments', 'Symptom advice', 'Where are you located?'],
+  },
+  booking: {
+    match: /(book|appointment|slot|schedule|reserve|booking)/i,
+    reply: `Booking is easy: 1) Create a free account (Register → Book Now), 2) Find a doctor and see their live availability, 3) Pick a 30-minute slot in the next 7 days, 4) Pay online or at the hospital.\n\nWant me to help you find a doctor for a specific problem? Just tell me your symptoms.`,
+    suggestions: ['Fever and cold', 'What doctors are available?', 'Do I pay online?', 'Where are you located?'],
+  },
+  doctors: {
+    match: /(which doctor|what doctor|special|available doctors|find a doctor|doctor for|best doctor|who is free)/i,
+    reply: `We have specialists in: Cardiology, Orthopedics, Dermatology, Pediatrics, Neurology, General Medicine, Gynecology, and Dentistry.\n\nEvery doctor shows a live status — Available now / With a patient / Off duty — so you always know who you can actually see.`,
+    suggestions: ['Book for headache', 'Fees & payments', 'Which doctor for skin problem?', 'Where are you located?'],
+  },
+  fees: {
+    match: /(fee|fees|price|cost|charge|paid|payment|pay|rate|how much|consultation)/i,
+    reply: `Consultation fees vary by specialist (from around ₹400–₹900 per visit).\n\nYou can pay in two ways:\n• 💳 Online now — card payment, confirmed instantly\n• 🏥 At the hospital — pay at the front desk when you arrive\n\nOnline-paid appointments can be refunded before the visit if you can't make it.`,
+    suggestions: ['How do I get a refund?', 'Book a doctor', 'Where are you located?'],
+  },
+  refund: {
+    match: /(refund|money back|reimburse)/i,
+    reply: `If you paid online and haven't completed your visit yet:\n\n1) Go to My Appointments, 2) tap "Request refund", or ask the reception desk.\n\nThe amount is refunded to you, the appointment is cancelled and the slot is freed for someone else. Completed or unpaid appointments can't be refunded.`,
+    suggestions: ['Book a doctor', 'Fees & payments', 'Cancel my appointment'],
+  },
+  cancel: {
+    match: /(cancel|can'?t make|couldn'?t come)/i,
+    reply: `You can cancel an upcoming appointment anytime from "My Appointments" on the dashboard.\n\nThe slot is freed right away. If you already paid online, request a refund at the same time and your money comes back.`,
+    suggestions: ['How do I get a refund?', 'Book a doctor', 'Where are you located?'],
+  },
+  emergency: {
+    match: /(emergency|urgent|serious|severe|ambulance|heart attack|chest pain|unconscious|breathing|bleeding)/i,
+    reply: `⚠️ This sounds serious — please don't wait.\n\n• Call 108 (ambulance) or 112 (National Emergency Number) right now\n• Our emergency helpline: +91 95863 33534 on WhatsApp\n• If you're near us, come in immediately — we'll see you first.\n\nI'm an assistant, not a doctor — for symptoms that worry you, real medical care comes first.`,
+    suggestions: ['I still want to see a doctor today', 'Where are you located?'],
+  },
+  symptoms: {
+    match: /(fever|cold|cough|headache|pain|dizzy|vomit|rash|skin|stomach|tummy|back|knee|joint|throat|flu|covid|diabetic|bp|blood pressure|sugar|sleep|anxiety|depress|allergy|infection)/i,
+    reply: `I can point you to the right specialist, but always confirm with a real doctor:\n\n• Fever, cold, cough, flu → General Medicine\n• Headache, fits, numbness → Neurology\n• Rash, acne, skin issues → Dermatology\n• Stomach pain, acidity → General Medicine\n• Back / knee / joint pain → Orthopedics\n• Child unwell → Pediatrics\n\nI'm not a doctor — this is just a starting point so you book the right department.`,
+    suggestions: ['Book an appointment', 'Available doctors', 'Fees & payments'],
+  },
+  location: {
+    match: /(where|location|address|reach|locate|direction|map|campus|near|clinic)/i,
+    reply: `📍 We're at:\n\nIndus University, Rancharda, via Shilaj, Gujarat 382115\n\nTap "Visit us" on our homepage to open the exact location in Google Maps.`,
+    suggestions: ['Book an appointment', 'Contact numbers', 'Emergency help'],
+  },
+  contact: {
+    match: /(contact|phone|number|call|whatsapp|mail|email|reach you)/i,
+    reply: `You can reach us at:\n\n• WhatsApp / Phone: +91 91737 40210\n• Email: np799519@gmail.com\n• Emergency helpline (WhatsApp): +91 95863 33534\n• Address: Indus University, Rancharda, via Shilaj, Gujarat 382115`,
+    suggestions: ['Open location', 'Book an appointment', 'Emergency help'],
+  },
+  hours: {
+    match: /(open|close|timing|time (do|are)|hour|working)/i,
+    reply: `You can browse and book online 24×7 — slots open across the next 7 days.\n\nReception is staffed during regular hospital hours, and our WhatsApp/emergency line (+91 95863 33534) is always available for urgent help.`,
+    suggestions: ['Book an appointment', 'Where are you located?', 'Emergency help'],
+  },
+  thanks: {
+    match: /(thank|thanks|thx|great|awesome|nice help|perfect)/i,
+    reply: `You're welcome! 😊 If you're ready, you can book in under a minute. Need anything else?`,
+    suggestions: ['Book an appointment', 'Fees & payments', 'Where are you located?'],
+  },
+};
+
+route('POST', '/api/chat', async (req, res) => {
+  const { message } = await readBody(req);
+  const text = String(message || '').trim();
+  if (!text) return sendJson(res, 400, { error: 'Please type a message.' });
+  if (text.length > 500) return sendJson(res, 400, { error: 'Message too long (500 characters max).' });
+
+  const priority = ['emergency', 'greeting', 'booking', 'doctors', 'symptoms', 'fees', 'refund', 'cancel', 'location', 'contact', 'hours', 'thanks'];
+  let reply = null, suggestions = [];
+  for (const key of priority) {
+    const rule = ASSISTANT[key];
+    if (rule.match.test(text)) { reply = rule.reply; suggestions = rule.suggestions; break; }
+  }
+  if (!reply) {
+    reply = `I'm not 100% sure about that one. 🙏 Here's what I can help with:\n\n• Booking appointments & finding doctors\n• Fees, refunds & cancellations\n• Clinic location & contact\n• Simple symptom guidance\n\nTry one of these, or ask me again in different words.`;
+    suggestions = ['Book an appointment', 'Symptom advice', 'Where are you located?', 'Emergency help'];
+  }
+  sendJson(res, 200, { reply, suggestions });
+});
+
 // ---------- Serverless & HTTP server ----------
 
 export default async function handler(req, res) {
