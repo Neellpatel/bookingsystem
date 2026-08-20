@@ -65,6 +65,26 @@ const params = new URLSearchParams(location.search);
 const seedColors = ['#0D9488','#D97706','#0F766E','#6B7280','#10B981','#07191D'];
 function seedColor(seed) { let h = 0; for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0; return seedColors[h % seedColors.length]; }
 function initials(name) { return name.replace('Dr. ', '').split(' ').map(p => p[0]).slice(0, 2).join(''); }
+const photoMap = {
+  arjun: 'https://randomuser.me/api/portraits/men/11.jpg',
+  rajiv: 'https://randomuser.me/api/portraits/men/52.jpg',
+  ananya: 'https://randomuser.me/api/portraits/women/44.jpg',
+  kavya: 'https://randomuser.me/api/portraits/women/65.jpg',
+  vikram: 'https://randomuser.me/api/portraits/men/75.jpg',
+  rohan: 'https://randomuser.me/api/portraits/men/29.jpg',
+  priya: 'https://randomuser.me/api/portraits/women/68.jpg',
+  sanjay: 'https://randomuser.me/api/portraits/men/32.jpg',
+};
+function doctorPhoto(seed) {
+  return photoMap[seed] || '';
+}
+function photoBlock(d) {
+  const url = doctorPhoto(d.photoSeed);
+  if (!url) {
+    return `<div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-display text-xl shrink-0 shadow-inner" style="background:${seedColor(d.photoSeed||d.name)}">${initials(d.name)}</div>`;
+  }
+  return `<img src="${url}" alt="${d.name}" loading="lazy" class="w-14 h-14 rounded-2xl object-cover shrink-0 shadow-inner ring-1 ring-slate-200" onerror="this.outerHTML=\`<div class='w-14 h-14 rounded-2xl flex items-center justify-center text-white font-display text-xl shrink-0 shadow-inner' style='background:${seedColor(d.photoSeed||d.name)}'>${initials(d.name)}</div>\`">`;
+}
 
 async function loadSpecialtyOptions() {
   const sel = document.getElementById('specialty');
@@ -85,9 +105,7 @@ function doctorCard(d) {
   return `
     <a href="/book.html?doctorId=${d.id}" class="touch-card bg-white border border-slate-100 rounded-2xl p-5 flex flex-col gap-4 shadow-sm hover:border-teal/30 transition group">
       <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-display text-xl shrink-0 shadow-inner" style="background:${seedColor(d.photoSeed||d.name)}">
-          ${initials(d.name)}
-        </div>
+        ${photoBlock(d)}
         <div class="min-w-0 flex-1">
           <div class="font-semibold text-base truncate">${d.name}</div>
           <div class="text-xs text-slate-400 font-mono">${d.specialty}</div>
