@@ -66,14 +66,14 @@ const seedColors = ['#0D9488','#D97706','#0F766E','#6B7280','#10B981','#07191D']
 function seedColor(seed) { let h = 0; for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0; return seedColors[h % seedColors.length]; }
 function initials(name) { return name.replace('Dr. ', '').split(' ').map(p => p[0]).slice(0, 2).join(''); }
 const photoMap = {
-  arjun: 'https://randomuser.me/api/portraits/men/11.jpg',
-  rajiv: 'https://randomuser.me/api/portraits/men/52.jpg',
-  ananya: 'https://randomuser.me/api/portraits/women/44.jpg',
-  kavya: 'https://randomuser.me/api/portraits/women/65.jpg',
-  vikram: 'https://randomuser.me/api/portraits/men/75.jpg',
-  rohan: 'https://randomuser.me/api/portraits/men/29.jpg',
-  priya: 'https://randomuser.me/api/portraits/women/68.jpg',
-  sanjay: 'https://randomuser.me/api/portraits/men/32.jpg',
+  arjun: '/photos/arjun.jpg',
+  rajiv: '/photos/rajiv.jpg',
+  ananya: '/photos/ananya.jpg',
+  kavya: '/photos/kavya.jpg',
+  vikram: '/photos/vikram.jpg',
+  rohan: '/photos/rohan.jpg',
+  priya: '/photos/priya.jpg',
+  sanjay: '/photos/sanjay.jpg',
 };
 function doctorPhoto(seed) {
   return photoMap[seed] || '';

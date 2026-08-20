@@ -168,14 +168,14 @@ function renderDoctorSummary(d) {
   const b = statusBadge(d.availabilityStatus);
   const initials = d.name.replace('Dr. ', '').split(' ').map(p => p[0]).slice(0, 2).join('');
   const photoMap = {
-    arjun: 'https://randomuser.me/api/portraits/men/11.jpg',
-    rajiv: 'https://randomuser.me/api/portraits/men/52.jpg',
-    ananya: 'https://randomuser.me/api/portraits/women/44.jpg',
-    kavya: 'https://randomuser.me/api/portraits/women/65.jpg',
-    vikram: 'https://randomuser.me/api/portraits/men/75.jpg',
-    rohan: 'https://randomuser.me/api/portraits/men/29.jpg',
-    priya: 'https://randomuser.me/api/portraits/women/68.jpg',
-    sanjay: 'https://randomuser.me/api/portraits/men/32.jpg',
+    arjun: '/photos/arjun.jpg',
+    rajiv: '/photos/rajiv.jpg',
+    ananya: '/photos/ananya.jpg',
+    kavya: '/photos/kavya.jpg',
+    vikram: '/photos/vikram.jpg',
+    rohan: '/photos/rohan.jpg',
+    priya: '/photos/priya.jpg',
+    sanjay: '/photos/sanjay.jpg',
   };
   const photo = photoMap[d.photoSeed]
     ? `<img src="${photoMap[d.photoSeed]}" alt="${d.name}" class="w-14 h-14 rounded-2xl object-cover shrink-0 shadow-inner ring-1 ring-slate-200">`
