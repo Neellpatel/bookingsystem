@@ -7,12 +7,12 @@
 <title>Find a Doctor — Doctor on Call</title>
 <meta name="description" content="Search and filter doctors by specialty, name, or availability. Book instantly.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = { theme: { extend: {
-    colors: { ink:'#07191D', canvas:'#F4F7F6', teal:'#0D9488', 'teal-dark':'#0F766E', 'teal-light':'#CCFBF1', brass:'#D97706', 'brass-light':'#FEF3C7', available:'#10B981', busy:'#F59E0B', offduty:'#6B7280' },
-    fontFamily: { display:['Fraunces','ui-serif','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+    colors: { ink:'#0B2B26', 'ink-surface':'#12372F', canvas:'#FBF6EA', teal:'#1F6B58', 'teal-dark':'#0B2B26', 'teal-light':'#E4EEE8', brass:'#B8924A', 'brass-light':'#F3E7C9', gold:'#D4B06A', cream:'#FBF6EA', available:'#2E7D5B', busy:'#B7791F', offduty:'#8A8577' },
+    fontFamily: { display:['Newsreader','ui-serif','Georgia','serif'], sans:['Inter','ui-sans-serif','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
   } } };
 </script>
 <link rel="stylesheet" href="/css/styles.css">
@@ -65,7 +65,7 @@
 <script src="/js/chat.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
-const seedColors = ['#0D9488','#D97706','#0F766E','#6B7280','#10B981','#07191D'];
+const seedColors = ['#1F6B58','#B8924A','#164A3E','#8A8577','#2E7D5B','#0B2B26'];
 function seedColor(seed) { let h = 0; for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0; return seedColors[h % seedColors.length]; }
 function initials(name) { return name.replace('Dr. ', '').split(' ').map(p => p[0]).slice(0, 2).join(''); }
 const photoMap = {
