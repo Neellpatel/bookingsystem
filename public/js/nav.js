@@ -17,11 +17,8 @@ function renderHeader(active) {
     <!-- Top Navigation Header (auto-hides on scroll down, returns on scroll up) -->
     <header class="site-header-bar sticky top-0 z-40">
       <div class="mx-auto max-w-7xl px-4 sm:px-8 h-[72px] flex items-center justify-between">
-        <a href="/index.html" class="flex items-center gap-3 shrink-0" aria-label="Doctor on Call home">
-          <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path d="M12.5 3h7v8.5H29v9h-9.5V29h-7v-8.5H3v-9h9.5z" stroke="#D4B06A" stroke-width="1.6" stroke-linejoin="round"/>
-            <path d="M14.5 7h3v8h8v2h-8v8h-3v-8h-8v-2h8z" fill="#D4B06A" opacity="0.18"/>
-          </svg>
+        <a href="/index.html" class="flex items-center gap-3 shrink-0 group" aria-label="Doctor on Call home">
+          <img src="/logo-mark.svg" alt="Doctor on Call" width="34" height="34" class="w-[34px] h-[34px] rounded-lg shadow-sm transition-transform group-hover:scale-105"/>
           <span class="font-display text-xl sm:text-[22px] tracking-tight text-[#FBF6EA] whitespace-nowrap">Doctor on Call</span>
         </a>
 

@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" fill="none">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="docBgGrad" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#143D34"/>
+      <stop offset="60%" stop-color="#0A241F"/>
+      <stop offset="100%" stop-color="#051713"/>
+    </radialGradient>
+
+    <!-- Metallic Champagne Gold Gradients -->
+    <linearGradient id="docGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7E6B8"/>
+      <stop offset="25%" stop-color="#E2BF72"/>
+      <stop offset="60%" stop-color="#C29743"/>
+      <stop offset="85%" stop-color="#DFBD70"/>
+      <stop offset="100%" stop-color="#FBF2D5"/>
+    </linearGradient>
+
+    <linearGradient id="docGoldGleam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E2BF72"/>
+      <stop offset="50%" stop-color="#FFF5D6"/>
+      <stop offset="100%" stop-color="#C29743"/>
+    </linearGradient>
+
+    <linearGradient id="docGoldSoft" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#9E762B"/>
+      <stop offset="100%" stop-color="#E8C982"/>
+    </linearGradient>
+
+    <!-- Subtle Drop Shadow -->
+    <filter id="docShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Squircle Badge -->
+  <rect x="2" y="2" width="116" height="116" rx="28" fill="url(#docBgGrad)" stroke="url(#docGold)" stroke-width="2"/>
+
+  <!-- Subtle Concentric Inner Calibration Ring (Precision Medicine) -->
+  <circle cx="60" cy="60" r="48" stroke="url(#docGold)" stroke-width="0.75" stroke-dasharray="2 4" opacity="0.35"/>
+  <circle cx="60" cy="60" r="52" stroke="url(#docGold)" stroke-width="0.5" opacity="0.2"/>
+
+  <!-- Orbital 'On Call' Stethoscope Ring (Back Arc) -->
+  <g filter="url(#docShadow)">
+    <path d="M 28 66 C 24 50, 34 36, 52 30 C 70 24, 88 28, 96 42" 
+          stroke="url(#docGoldSoft)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.75"/>
+    
+    <!-- Medical Cross (Core Healing Anchor) -->
+    <path d="M 50 26 
+             C 50 23.8, 51.8 22, 54 22 
+             L 66 22 
+             C 68.2 22, 70 23.8, 70 26 
+             L 70 50 
+             L 94 50 
+             C 96.2 50, 98 51.8, 98 54 
+             L 98 66 
+             C 98 68.2, 96.2 70, 94 70 
+             L 70 70 
+             L 70 94 
+             C 70 96.2, 68.2 98, 66 98 
+             L 54 98 
+             C 51.8 98, 50 96.2, 50 94 
+             L 50 70 
+             L 26 70 
+             C 23.8 70, 22 68.2, 22 66 
+             L 22 54 
+             C 22 51.8, 23.8 50, 26 50 
+             L 50 50 
+             Z"
+          fill="url(#docGold)" 
+          stroke="#0A241F" 
+          stroke-width="1.5"/>
+
+    <!-- Cross Bevel / Inner Depth Accent -->
+    <path d="M 52 25 L 68 25 L 68 52 L 95 52 L 95 68 L 68 68 L 68 95 L 52 95 L 52 68 L 25 68 L 25 52 L 52 52 Z" 
+          stroke="url(#docGoldGleam)" stroke-width="0.75" fill="none" opacity="0.6"/>
+
+    <!-- Orbital 'On Call' Ring (Front Arc Wrapping Cross) -->
+    <path d="M 96 52 C 98 68, 86 84, 68 90 C 50 96, 32 92, 24 78" 
+          stroke="url(#docGold)" stroke-width="3" stroke-linecap="round" fill="none"/>
+    
+    <!-- Stethoscope Sensor / Call Pulse Node -->
+    <circle cx="23" cy="74" r="4.5" fill="url(#docGoldGleam)" stroke="#0A241F" stroke-width="1.2"/>
+    <circle cx="23" cy="74" r="1.8" fill="#0A241F"/>
+
+    <circle cx="96.5" cy="46" r="3" fill="url(#docGoldGleam)"/>
+
+    <!-- Dynamic Lifeline Pulse in Center (The Heart of Care) -->
+    <path d="M 33 60 L 45 60 L 51 53 L 57 69 L 63 49 L 69 66 L 75 60 L 87 60" 
+          stroke="#071E1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M 33 60 L 45 60 L 51 53 L 57 69 L 63 49 L 69 66 L 75 60 L 87 60" 
+          stroke="#FFF6DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <!-- Radiant Healing Spark / Star at Apex -->
+    <polygon points="60,33 61.5,39 67,40.5 61.5,42 60,48 58.5,42 53,40.5 58.5,39" fill="#FFF9EA"/>
+  </g>
+</svg>

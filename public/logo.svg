@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" width="320" height="64" fill="none">
+  <defs>
+    <!-- Background Gradient for Emblem -->
+    <radialGradient id="hDocBg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#143D34"/>
+      <stop offset="60%" stop-color="#0A241F"/>
+      <stop offset="100%" stop-color="#051713"/>
+    </radialGradient>
+
+    <!-- Champagne Gold Gradient -->
+    <linearGradient id="hDocGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7E6B8"/>
+      <stop offset="25%" stop-color="#E2BF72"/>
+      <stop offset="60%" stop-color="#C29743"/>
+      <stop offset="85%" stop-color="#DFBD70"/>
+      <stop offset="100%" stop-color="#FBF2D5"/>
+    </linearGradient>
+
+    <linearGradient id="hDocGoldSoft" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#9E762B"/>
+      <stop offset="100%" stop-color="#E8C982"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Group: Emblem Mark (Scaled to 52x52 at x=6, y=6) -->
+  <g transform="translate(6, 6)">
+    <!-- Badge Background -->
+    <rect width="52" height="52" rx="14" fill="url(#hDocBg)" stroke="url(#hDocGold)" stroke-width="1.4"/>
+    
+    <!-- Calibration Rings -->
+    <circle cx="26" cy="26" r="22" stroke="url(#hDocGold)" stroke-width="0.5" stroke-dasharray="1.5 3" opacity="0.4"/>
+
+    <!-- Orbital Ring Back -->
+    <path d="M 12 28 C 10 21, 15 15, 23 13 C 31 10, 39 12, 42 18" 
+          stroke="url(#hDocGoldSoft)" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.8"/>
+
+    <!-- Medical Cross -->
+    <path d="M 21.5 11 C 21.5 10 22.3 9.2 23.3 9.2 L 28.7 9.2 C 29.7 9.2 30.5 10 30.5 11 L 30.5 21.5 L 41 21.5 C 42 21.5 42.8 22.3 42.8 23.3 L 42.8 28.7 C 42.8 29.7 42 30.5 41 30.5 L 30.5 30.5 L 30.5 41 C 30.5 42 29.7 42.8 28.7 42.8 L 23.3 42.8 C 22.3 42.8 21.5 42 21.5 41 L 21.5 30.5 L 11 30.5 C 10 30.5 9.2 29.7 9.2 28.7 L 9.2 23.3 C 9.2 22.3 10 21.5 11 21.5 L 21.5 21.5 Z"
+          fill="url(#hDocGold)" stroke="#071E1A" stroke-width="0.8"/>
+
+    <!-- Orbital Ring Front -->
+    <path d="M 42 23 C 43 30, 38 37, 30 40 C 22 42, 14 40, 10 34" 
+          stroke="url(#hDocGold)" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <circle cx="10" cy="33" r="2.2" fill="url(#hDocGold)" stroke="#071E1A" stroke-width="0.7"/>
+
+    <!-- Center Lifeline Pulse -->
+    <path d="M 14.5 26 L 19.5 26 L 22.5 22.5 L 25 30.5 L 28 20.5 L 30.5 29 L 33 26 L 37.5 26" 
+          stroke="#071E1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M 14.5 26 L 19.5 26 L 22.5 22.5 L 25 30.5 L 28 20.5 L 30.5 29 L 33 26 L 37.5 26" 
+          stroke="#FFFDF5" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+
+  <!-- Typographic Wordmark -->
+  <g transform="translate(70, 0)">
+    <text x="0" y="34" font-family="'Newsreader', Georgia, serif" font-size="22" font-weight="600" fill="#FBF6EA" letter-spacing="-0.3">
+      Doctor on Call
+    </text>
+    <text x="1" y="49" font-family="'Inter', ui-sans-serif, system-ui, sans-serif" font-size="8.5" font-weight="600" fill="#D4B06A" letter-spacing="2.8">
+      MEDICAL CONCIERGE
+    </text>
+  </g>
+</svg>

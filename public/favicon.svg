@@ -1,4 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="7" fill="#0B2B26"/>
-  <path d="M12.5 6h7v6.5H26v7h-6.5V26h-7v-6.5H6v-7h6.5z" fill="none" stroke="#D4B06A" stroke-width="1.6" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <defs>
+    <radialGradient id="favBg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#143D34"/>
+      <stop offset="100%" stop-color="#051713"/>
+    </radialGradient>
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBF2D5"/>
+      <stop offset="40%" stop-color="#E2BF72"/>
+      <stop offset="100%" stop-color="#C29743"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Squircle -->
+  <rect width="32" height="32" rx="8" fill="url(#favBg)" stroke="url(#favGold)" stroke-width="1.2"/>
+
+  <!-- Orbital Ring (24/7 Call Reach) -->
+  <ellipse cx="16" cy="16" rx="12" ry="5.5" transform="rotate(-25 16 16)" stroke="url(#favGold)" stroke-width="1" fill="none" opacity="0.6"/>
+
+  <!-- Medical Cross (Clean, Bold, Legible at 16x16 / 32x32) -->
+  <path d="M 13.5 7.5 C 13.5 6.9 14 6.5 14.6 6.5 L 17.4 6.5 C 18 6.5 18.5 6.9 18.5 7.5 L 18.5 13.5 L 24.5 13.5 C 25.1 13.5 25.5 14 25.5 14.6 L 25.5 17.4 C 25.5 18 25.1 18.5 24.5 18.5 L 18.5 18.5 L 18.5 24.5 C 18.5 25.1 18 25.5 17.4 25.5 L 14.6 25.5 C 14 25.5 13.5 25.1 13.5 24.5 L 13.5 18.5 L 7.5 18.5 C 6.9 18.5 6.5 18 6.5 17.4 L 6.5 14.6 C 6.5 14 6.9 13.5 7.5 13.5 L 13.5 13.5 Z"
+        fill="url(#favGold)" stroke="#051713" stroke-width="0.8"/>
+
+  <!-- Lifeline Center Pulse -->
+  <path d="M 9.5 16 L 12.5 16 L 14.5 13.5 L 16 18.5 L 17.5 14 L 19 16.5 L 22.5 16" 
+        stroke="#051713" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 9.5 16 L 12.5 16 L 14.5 13.5 L 16 18.5 L 17.5 14 L 19 16.5 L 22.5 16" 
+        stroke="#FFF8E7" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
