@@ -1,6 +1,6 @@
 {
   "name": "doctor-on-call",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Doctor on Call — doctor appointment booking platform ready for Vercel deployment with database support.",
   "type": "module",
   "main": "server.js",

@@ -36,6 +36,19 @@ async function api(method, path, body) {
   let data = {};
   try { data = await res.json(); } catch { /* no body */ }
   if (!res.ok) {
+    // Session is invalid/expired on the server (e.g. DB was reset, token expired) -> drop the stale
+    // local login and send the user to the right sign-in page. Login/register 401s are real errors.
+    if (res.status === 401 && !path.startsWith('/auth/')) {
+      const wasStaff = Auth.isStaff();
+      Auth.clear();
+      const here = location.pathname;
+      const onAuthPage = /\/(login|register)\.html$/.test(here);
+      if (!onAuthPage) {
+        const target = (wasStaff || here.startsWith('/reception')) ? '/reception/login.html'
+          : '/login.html?redirect=' + encodeURIComponent(here + location.search);
+        location.href = target;
+      }
+    }
     const err = new Error(data.error || `Request failed (${res.status})`);
     err.status = res.status;
     throw err;
@@ -49,9 +62,18 @@ const Api = {
   patch: (path, body) => api('PATCH', path, body),
 };
 
+function formatLocalDate(d = new Date()) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function fmtDate(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  if (!dateStr) return '—';
+  const str = String(dateStr).trim();
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(str) ? new Date(str + 'T00:00:00') : new Date(str.replace(' ', 'T'));
+  return isNaN(d.getTime()) ? str : d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 function fmtTime(t) {
@@ -82,8 +104,22 @@ function apptStatusBadge(status) {
   return map[status] || map.pending;
 }
 
+// Returns the verified user, or null (and clears the local session) if the server doesn't accept the token.
+Auth.verify = async function () {
+  if (!Auth.getToken()) return null;
+  try {
+    const { user } = await Api.get('/me');
+    localStorage.setItem(Auth.USER_KEY, JSON.stringify(user));
+    return user;
+  } catch (e) {
+    if (e.status === 401) Auth.clear();
+    return null;
+  }
+};
+
 window.Auth = Auth;
 window.Api = Api;
+window.formatLocalDate = formatLocalDate;
 window.fmtDate = fmtDate;
 window.fmtTime = fmtTime;
 window.money = money;

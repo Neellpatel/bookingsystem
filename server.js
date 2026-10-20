@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomUUID, randomBytes } from 'node:crypto';
-import { getDb, hashPassword, verifyPassword } from './db/index.js';
+import { getDb, getDbType, isEphemeralDb, ensureSlots, hashPassword, verifyPassword } from './db/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -160,20 +160,35 @@ export async function handleApi(req, res, pathname, query) {
 
 route('POST', '/api/auth/register', async (req, res) => {
   const body = await readBody(req);
-  const { name, email, phone, password } = body;
-  if (!name || !email || !password || password.length < 6) {
+  const name = String(body.name || '').trim();
+  const email = String(body.email || '').toLowerCase().trim();
+  const phone = String(body.phone || '').trim();
+  const password = String(body.password || '');
+  if (!name || !/^\S+@\S+\.\S+$/.test(email) || password.length < 6) {
     return sendJson(res, 400, { error: 'Please provide your name, a valid email, and a password of at least 6 characters.' });
   }
   const db = await getDb();
-  const existing = await db.get('SELECT id FROM users WHERE email = ?', [email.toLowerCase().trim()]);
+  const existing = await db.get('SELECT id FROM users WHERE email = ?', [email]);
   if (existing) return sendJson(res, 409, { error: 'An account with that email already exists. Try signing in instead.' });
   const { hash, salt } = hashPassword(password);
-  const info = await db.run(
-    'INSERT INTO users (name, email, phone, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?, ?)',
-    [name.trim(), email.toLowerCase().trim(), phone || '', hash, salt, 'patient']
-  );
-  const token = await createSession(info.lastInsertRowid);
-  sendJson(res, 201, { token, user: { id: info.lastInsertRowid, name, email, role: 'patient' } });
+  let info;
+  try {
+    info = await db.run(
+      'INSERT INTO users (name, email, phone, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, email, phone, hash, salt, 'patient']
+    );
+  } catch (err) {
+    // two simultaneous sign-ups with the same email -> UNIQUE constraint
+    if (/unique|duplicate/i.test(String(err.message))) {
+      return sendJson(res, 409, { error: 'An account with that email already exists. Try signing in instead.' });
+    }
+    throw err;
+  }
+  // read the row back so we return exactly what was stored
+  const user = await db.get('SELECT id, name, email, phone, role FROM users WHERE id = ?', [info.lastInsertRowid]);
+  if (!user) throw new Error('User row was not found after insert (database not persisting?)');
+  const token = await createSession(user.id);
+  sendJson(res, 201, { token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 });
 
 route('POST', '/api/auth/login', async (req, res) => {
@@ -206,6 +221,20 @@ route('POST', '/api/auth/logout', async (req, res) => {
   sendJson(res, 200, { ok: true });
 });
 
+// ---- Health / diagnostics (open /api/health after deploying to confirm the DB is really persistent) ----
+
+route('GET', '/api/health', async (req, res) => {
+  const db = await getDb();
+  const count = async (t) => Number((await db.get(`SELECT COUNT(*) AS c FROM ${t}`))?.c || 0);
+  sendJson(res, 200, {
+    ok: true,
+    database: getDbType(),
+    persistent: !isEphemeralDb(),
+    warning: isEphemeralDb() ? 'SQLite in /tmp on serverless: data is lost on cold start and not shared between instances. Set DATABASE_URL / POSTGRES_URL / TURSO_DATABASE_URL.' : undefined,
+    counts: { users: await count('users'), sessions: await count('sessions'), doctors: await count('doctors'), slots: await count('doctor_slots'), appointments: await count('appointments'), payments: await count('payments'), refunds: await count('refunds'), feedback: await count('feedback') },
+  });
+});
+
 // ---- Doctors ----
 
 route('GET', '/api/doctors', async (req, res, params, query) => {
@@ -235,7 +264,9 @@ route('GET', '/api/doctors/:id', async (req, res, params) => {
 
 route('GET', '/api/doctors/:id/slots', async (req, res, params, query) => {
   const db = await getDb();
+  await ensureSlots(db); // keeps the rolling 7-day calendar filled (throttled)
   const date = query.date;
+  const minTime = query.minTime;
   let sql = 'SELECT * FROM doctor_slots WHERE doctor_id = ? AND is_booked = 0';
   const args = [params.id];
   if (date) {
@@ -245,6 +276,10 @@ route('GET', '/api/doctors/:id/slots', async (req, res, params, query) => {
     const todayStr = new Date().toISOString().slice(0, 10);
     sql += ' AND slot_date >= ?';
     args.push(todayStr);
+  }
+  if (minTime) {
+    sql += ' AND start_time >= ?';
+    args.push(minTime);
   }
   sql += ' ORDER BY slot_date, start_time';
   const slots = await db.all(sql, args);
@@ -306,12 +341,20 @@ route('POST', '/api/appointments', async (req, res) => {
   const status = (!isStaff && paymentMethod === 'online') ? 'pending' : 'confirmed';
   const paymentStatus = (isStaff && paymentMethod === 'online') ? 'paid' : 'unpaid';
 
-  const info = await db.run(`INSERT INTO appointments
-    (patient_id, doctor_id, slot_id, appointment_date, start_time, end_time, reason, status, payment_method, payment_status, amount, booked_by_staff_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [targetPatientId, doctorId, slotId, slot.slot_date, slot.start_time, slot.end_time, reason || '', status, paymentMethod, paymentStatus, doctor.consultation_fee, isStaff ? user.id : null]);
+  // Claim the slot atomically FIRST: only one request can flip is_booked 0 -> 1.
+  const claim = await db.run('UPDATE doctor_slots SET is_booked = 1 WHERE id = ? AND is_booked = 0', [slotId]);
+  if (!claim.changes) return sendJson(res, 409, { error: 'That slot is no longer available. Please pick another time.' });
 
-  await db.run('UPDATE doctor_slots SET is_booked = 1 WHERE id = ?', [slotId]);
+  let info;
+  try {
+    info = await db.run(`INSERT INTO appointments
+      (patient_id, doctor_id, slot_id, appointment_date, start_time, end_time, reason, status, payment_method, payment_status, amount, booked_by_staff_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [targetPatientId, doctorId, slotId, slot.slot_date, slot.start_time, slot.end_time, reason || '', status, paymentMethod, paymentStatus, doctor.consultation_fee, isStaff ? user.id : null]);
+  } catch (err) {
+    await db.run('UPDATE doctor_slots SET is_booked = 0 WHERE id = ?', [slotId]); // release the slot if saving failed
+    throw err;
+  }
 
   const appt = await db.get(APPT_SELECT + ' WHERE a.id = ?', [info.lastInsertRowid]);
   sendJson(res, 201, { appointment: publicAppointment(appt) });
@@ -351,16 +394,31 @@ route('PATCH', '/api/appointments/:id', async (req, res, params) => {
   const isStaff = user.role === 'staff' || user.role === 'admin';
   if (!isOwner && !isStaff) return sendJson(res, 403, { error: 'Not authorized.' });
 
-  const { status } = await readBody(req);
-  const allowed = ['pending', 'confirmed', 'completed', 'cancelled'];
-  if (!allowed.includes(status)) return sendJson(res, 400, { error: 'Invalid status.' });
-  if (isOwner && !isStaff && status !== 'cancelled') return sendJson(res, 403, { error: 'Patients can only cancel their own appointments.' });
-
+  const body = await readBody(req);
+  const { status, paymentStatus } = body;
   const nowISO = new Date().toISOString();
-  await db.run(`UPDATE appointments SET status = ?, updated_at = ? WHERE id = ?`, [status, nowISO, params.id]);
-  if (status === 'cancelled' && appt.slot_id) {
-    await db.run('UPDATE doctor_slots SET is_booked = 0 WHERE id = ?', [appt.slot_id]);
+
+  // Staff can update paymentStatus (mark paid at desk)
+  if (paymentStatus && isStaff) {
+    const validPayStatuses = ['unpaid', 'paid', 'refunded'];
+    if (!validPayStatuses.includes(paymentStatus)) return sendJson(res, 400, { error: 'Invalid payment status.' });
+    await db.run(`UPDATE appointments SET payment_status = ?, updated_at = ? WHERE id = ?`, [paymentStatus, nowISO, params.id]);
   }
+
+  // Update appointment status if provided
+  if (status) {
+    const allowed = ['pending', 'confirmed', 'completed', 'cancelled'];
+    if (!allowed.includes(status)) return sendJson(res, 400, { error: 'Invalid status.' });
+    if (isOwner && !isStaff && status !== 'cancelled') return sendJson(res, 403, { error: 'Patients can only cancel their own appointments.' });
+    await db.run(`UPDATE appointments SET status = ?, updated_at = ? WHERE id = ?`, [status, nowISO, params.id]);
+    if (status === 'cancelled' && appt.slot_id) {
+      await db.run('UPDATE doctor_slots SET is_booked = 0 WHERE id = ?', [appt.slot_id]);
+    }
+    if (status === 'confirmed' && appt.slot_id) {
+      await db.run('UPDATE doctor_slots SET is_booked = 1 WHERE id = ?', [appt.slot_id]);
+    }
+  }
+
   const updated = await db.get(APPT_SELECT + ' WHERE a.id = ?', [params.id]);
   sendJson(res, 200, { appointment: publicAppointment(updated) });
 });

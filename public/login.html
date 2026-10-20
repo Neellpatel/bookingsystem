@@ -80,7 +80,9 @@
 <script src="/js/anim.js"></script>
 <script src="/js/chat.js"></script>
 <script>
-if (Auth.isLoggedIn()) window.location.href = '/dashboard.html';
+Auth.verify().then((u) => {
+  if (u) window.location.href = (u.role === 'staff' || u.role === 'admin') ? '/reception/index.html' : '/dashboard.html';
+});
 
 document.getElementById('toggle-pw').addEventListener('click', () => {
   const pw = document.getElementById('password');

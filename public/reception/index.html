@@ -267,9 +267,9 @@ document.getElementById('b-doctor').addEventListener('change', async () => {
   if (!document.getElementById('b-doctor').value) { dateSel.disabled = true; checkBookReady(); return; }
   for (let i = 0; i < 7; i++) {
     const d = new Date(); d.setDate(d.getDate() + i);
-    const val = d.toISOString().slice(0, 10);
+    const val = formatLocalDate(d);
     const opt = document.createElement('option');
-    opt.value = val; opt.textContent = fmtDate(val);
+    opt.value = val; opt.textContent = (i === 0 ? 'Today — ' : (i === 1 ? 'Tomorrow — ' : '')) + fmtDate(val);
     dateSel.appendChild(opt);
   }
   dateSel.disabled = false;
@@ -282,11 +282,20 @@ document.getElementById('b-date').addEventListener('change', async () => {
   const date = document.getElementById('b-date').value;
   if (!doctorId || !date) { slotSel.disabled = true; checkBookReady(); return; }
   try {
-    const { slots } = await Api.get(`/doctors/${doctorId}/slots?date=${date}`);
-    slotSel.innerHTML = slots.length
-      ? '<option value="">Select a time…</option>' + slots.map(s => `<option value="${s.id}">${fmtTime(s.startTime)} – ${fmtTime(s.endTime)}</option>`).join('')
-      : '<option value="">No openings this day</option>';
-    slotSel.disabled = !slots.length;
+    const now = new Date();
+    const isToday = (date === formatLocalDate(now));
+    let minTime = null;
+    if (isToday) {
+      const minHour = now.getHours() + 1;
+      minTime = `${String(minHour).padStart(2, '0')}:00`;
+    }
+    const url = `/doctors/${doctorId}/slots?date=${date}` + (minTime ? `&minTime=${minTime}` : '');
+    const { slots } = await Api.get(url);
+    const validSlots = isToday && minTime ? slots.filter(s => s.startTime >= minTime) : slots;
+    slotSel.innerHTML = validSlots.length
+      ? '<option value="">Select a time…</option>' + validSlots.map(s => `<option value="${s.id}">${fmtTime(s.startTime)} – ${fmtTime(s.endTime)}</option>`).join('')
+      : '<option value="">No openings remaining for this day</option>';
+    slotSel.disabled = !validSlots.length;
   } catch { slotSel.disabled = true; }
   checkBookReady();
 });

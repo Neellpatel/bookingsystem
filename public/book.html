@@ -129,7 +129,7 @@
 const doctorId = new URLSearchParams(location.search).get('doctorId');
 let selectedDate = null, selectedSlot = null, doctor = null;
 
-function todayPlus(n) { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+function todayPlus(n) { const d = new Date(); d.setDate(d.getDate() + n); return formatLocalDate(d); }
 function dayLabel(dateStr, i) {
   if (i === 0) return 'Today';
   if (i === 1) return 'Tomorrow';
@@ -224,11 +224,29 @@ async function selectDate(date, i) {
   const grid = document.getElementById('slot-grid');
   grid.innerHTML = '<div class="h-11 rounded-xl skel"></div><div class="h-11 rounded-xl skel"></div><div class="h-11 rounded-xl skel"></div>';
   try {
-    const { slots } = await Api.get(`/doctors/${doctorId}/slots?date=${date}`);
-    grid.innerHTML = slots.length ? slots.map((s, i) => `
-      <button class="slot-btn reveal px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono hover:border-teal transition active:scale-95" data-slot-id="${s.id}" data-start="${s.startTime}" data-end="${s.endTime}" style="--d:${i * 45}ms">
+    const now = new Date();
+    const todayStr = formatLocalDate(now);
+    const isToday = (date === todayStr);
+
+    // If today is chosen, only show slots after current time (e.g. if now is 11:xx, show slots from 12:00 onwards)
+    let minTime = null;
+    if (isToday) {
+      const minHour = now.getHours() + 1;
+      minTime = `${String(minHour).padStart(2, '0')}:00`;
+    }
+
+    const url = `/doctors/${doctorId}/slots?date=${date}` + (minTime ? `&minTime=${minTime}` : '');
+    const { slots } = await Api.get(url);
+
+    // Client-side timezone verification filter
+    const validSlots = isToday && minTime
+      ? slots.filter(s => s.startTime >= minTime)
+      : slots;
+
+    grid.innerHTML = validSlots.length ? validSlots.map((s, idx) => `
+      <button class="slot-btn reveal px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono hover:border-teal transition active:scale-95" data-slot-id="${s.id}" data-start="${s.startTime}" data-end="${s.endTime}" style="--d:${idx * 45}ms">
         ${fmtTime(s.startTime)}
-      </button>`).join('') : '<p class="col-span-full text-sm text-slate-400 py-4">No openings this day — try another date.</p>';
+      </button>`).join('') : `<p class="col-span-full text-sm text-slate-400 py-4">${isToday ? 'No more slots available today after this hour — please choose another date.' : 'No openings this day — try another date.'}</p>`;
     Animate.scan(grid);
     grid.querySelectorAll('.slot-btn').forEach(btn => btn.addEventListener('click', () => selectSlot(btn)));
   } catch {
@@ -255,6 +273,20 @@ function updateSummary() {
 document.getElementById('confirm-btn').addEventListener('click', async () => {
   const errEl = document.getElementById('booking-error');
   errEl.classList.add('hidden');
+
+  // Validate time for today's appointment
+  const now = new Date();
+  const todayStr = formatLocalDate(now);
+  if (selectedDate === todayStr && selectedSlot) {
+    const minHour = now.getHours() + 1;
+    const minTime = `${String(minHour).padStart(2, '0')}:00`;
+    if (selectedSlot.start < minTime) {
+      errEl.textContent = 'This time slot is no longer available. Please select a later time or date.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+  }
+
   const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
   const reason = document.getElementById('reason').value.trim();
   const btn = document.getElementById('confirm-btn');
